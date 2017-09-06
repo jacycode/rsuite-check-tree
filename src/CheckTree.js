@@ -49,6 +49,12 @@ class CheckTree extends Component {
         data: this.getInitialTreeData(nextProps.data)
       });
     }
+
+    if (!_.isEqual(this.props.value, nextProps.value)) {
+      this.setState({
+        value: nextProps.value
+      });
+    }
   }
   /**
     * 初始化 TreeData
