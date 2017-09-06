@@ -1,11 +1,11 @@
 import React from 'react';
 export default [
   {
-    label: <span><i className="fa fa-user"></i> Master</span>,
+    label: <span><i className="icon icon-user"></i> Master</span>,
     value: 'Master',
     children: [
       {
-        label: <span><i className="fa fa-book"></i> Eugenia</span>,
+        label: <span><i className="icon icon-book"></i> Eugenia</span>,
         value: 'Eugenia'
       },
       {

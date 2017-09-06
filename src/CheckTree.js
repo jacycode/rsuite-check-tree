@@ -8,14 +8,16 @@ const propTypes = {
   /**
    * 是否关系检查
    */
-  relation: React.PropTypes.bool,
-  onChange: React.PropTypes.func,
+  relation: PropTypes.bool,
+  onChange: PropTypes.func,
+  onExpand: PropTypes.func,
   defaultValue: PropTypes.array,
   value: PropTypes.array,
   disabledItems: PropTypes.array,
   valueKey: PropTypes.string,
   labelKey: PropTypes.string,
   childrenKey: PropTypes.string,
+
 };
 
 const defaultProps = {
@@ -52,7 +54,7 @@ class CheckTree extends Component {
 
     if (!_.isEqual(this.props.value, nextProps.value)) {
       this.setState({
-        value: nextProps.value
+        value: nextProps.value,
       });
     }
   }

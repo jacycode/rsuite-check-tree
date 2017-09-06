@@ -43,7 +43,6 @@ class App extends Component {
           </Markdown>
           <br />
           <h2 id="CheckTree"><code>{'# <CheckTree>'}</code></h2>
-          <CheckTree1 />
           <Markdown>
             {require('./md/checkTree1.md')}
           </Markdown>
