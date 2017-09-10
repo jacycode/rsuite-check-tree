@@ -10,6 +10,9 @@ import './less/index.less';
 
 import CheckTree1 from './examples/CheckTree1';
 import CheckTree2 from './examples/CheckTree2';
+import ControlledTree from './examples/ControlledTree';
+import LoadDataTree from './examples/loadData';
+
 
 class App extends Component {
   render() {
@@ -47,7 +50,13 @@ class App extends Component {
             {require('./md/checkTree1.md')}
           </Markdown>
           <h5><code>非关系状态检查</code></h5>
-          <CheckTree2 />
+          {/* <CheckTree2 /> */}
+          <Markdown>
+            {require('./md/checkTree2.md')}
+          </Markdown>
+          <br />
+          <h5><code>受控组件</code></h5>
+          <ControlledTree />
           <Markdown>
             {require('./md/checkTree2.md')}
           </Markdown>

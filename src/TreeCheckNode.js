@@ -24,7 +24,8 @@ class TreeCheckNode extends Component {
       onKeyDown,
       labelClickableExpand,
       nodeData,
-      checkState
+      checkState,
+      renderTreeNode
     } = this.props;
 
     const classes = classNames('tree-node', {

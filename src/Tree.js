@@ -52,10 +52,10 @@ class TreeView extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (
-      this.props.value !== nextProps.value &&
+      this.props.activeNode !== nextProps.activeNode &&
       this.state.activeNode !== nextProps.activeNode
     ) {
-      let activeNode = nextProps.value;
+      let activeNode = nextProps.activeNode;
       let targetNode = this.refs[`children_${activeNode}`];
       let el = findDOMNode(targetNode);
       let container = findDOMNode(this.treeView);
@@ -231,6 +231,7 @@ class TreeView extends Component {
           className={childrenClasses}
           key={index}
           ref={refKey}
+          multiple={true}
           {...props}
         >
           {nodes.map((child, index) => this.renderNode(child, index, layer, itemData))}

@@ -9,15 +9,16 @@ const propTypes = {
    * 是否关系检查
    */
   relation: PropTypes.bool,
-  onChange: PropTypes.func,
-  onExpand: PropTypes.func,
   defaultValue: PropTypes.array,
   value: PropTypes.array,
   disabledItems: PropTypes.array,
   valueKey: PropTypes.string,
   labelKey: PropTypes.string,
   childrenKey: PropTypes.string,
-
+  onChange: PropTypes.func,
+  onExpand: PropTypes.func,
+  onSelect: PropTypes.func,
+  rennderTreeNode: PropTypes.func
 };
 
 const defaultProps = {
@@ -31,13 +32,13 @@ class CheckTree extends Component {
   constructor(props) {
     super(props);
     this.tempNode = null;
+    this.isControlled = 'value' in props;
     const nextValue = props.value || props.defaultValue || [];
     this.state = {
       data: [],
-      value: nextValue
+      selectedValues: nextValue
     };
   }
-
   componentWillMount() {
     this.setState({
       data: this.getInitialTreeData()
@@ -53,9 +54,13 @@ class CheckTree extends Component {
     }
 
     if (!_.isEqual(this.props.value, nextProps.value)) {
+
       this.setState({
-        value: nextProps.value,
+        selectedValues: nextProps.value,
+      }, () => {
+
       });
+
     }
   }
   /**
@@ -122,11 +127,11 @@ class CheckTree extends Component {
    * 初始化选中的状态
    */
   initCheckedState = () => {
-    const { value } = this.state;
+    const { selectedValues } = this.state;
     const { valueKey, childrenKey } = this.props;
     const loop = (nodes) => {
       for (let i = 0; i < nodes.length; i += 1) {
-        value.forEach((node) => {
+        selectedValues.forEach((node) => {
           nodes[i].checkState = node === nodes[i][valueKey] ? 'checked' : 'unchecked';
         });
         if (nodes[i][childrenKey]) {
@@ -141,12 +146,12 @@ class CheckTree extends Component {
    * 初始化子节点的 CheckState
    */
   initChildrenNodeCheckState() {
-    const { value } = this.state;
+    const { selectedValues } = this.state;
     const { valueKey, childrenKey } = this.props;
     const leafNodes = [];
     const loop = (nodes) => {
       for (let i = 0; i < nodes.length; i += 1) {
-        value.forEach((node) => {
+        selectedValues.forEach((node) => {
           if (nodes[i][childrenKey]) {
             if (node === nodes[i][valueKey] || nodes[i].checkState === 'checked') {
               nodes[i].childrenKey.map((node) => node.checkState = 'checked');
@@ -192,14 +197,14 @@ class CheckTree extends Component {
   * 给所有的节点，创建一个 parentNode 属性
   */
   createParentNode = () => {
-    const { value } = this.state;
+    const { selectedValues } = this.state;
     const { valueKey, childrenKey } = this.props;
 
     const loop = (nodes, parentNode) => {
       for (let i = 0; i < nodes.length; i += 1) {
         nodes[i].parentNode = parentNode;
         // 同时加上 checkState 属性
-        value.forEach((node) => {
+        selectedValues.forEach((node) => {
           nodes[i].checkState = node === nodes[i][valueKey] ? 'checked' : 'unchecked';
         });
         if (nodes[i][childrenKey]) {
@@ -229,27 +234,49 @@ class CheckTree extends Component {
     }
   }
 
+  getSelectedValues(selectValue, checkState) {
+    let selectedValues = this.state.selectedValues;
+    const key = selectedValues.indexOf(selectValue);
+    if (checkState === 'checked') {
+      selectedValues.push(selectValue);
+    } else if (checkState === 'unchecked' || !checkState) {
+      if (key !== -1) {
+        selectedValues.splice(key, 1);
+      }
+    }
+    return selectedValues;
+  }
   /**
    * 选择某个节点后的回调函数
    * @param {object} activeNodeData   节点的数据
    * @param {number} layer            节点的层级
    */
   handleSelect = (activeNodeData, layer) => {
-    const { valueKey, childrenKey } = this.props;
-    const { onChange, relation } = this.props;
+    const { valueKey, childrenKey, onChange, onSelect, relation } = this.props;
     const nextData = _.cloneDeep(this.state.data);
-    const activeNode = this.getActiveNode(nextData, activeNodeData[valueKey]);
-    relation && this.checkChildren(activeNode[childrenKey], activeNode.checkState);
-    this.setState({ data: nextData }, () => {
-      onChange && onChange(activeNode, nextData, layer);
-    });
+    if (
+      'defaultValue' in this.props ||
+      (this.isControlled && onChange)
+    ) {
+      const activeNode = this.getActiveNode(nextData, activeNodeData[valueKey]);
+      const selectedValues = this.getSelectedValues(activeNode[valueKey], activeNode.checkState);
+      relation && this.checkChildren(activeNode[childrenKey], activeNode.checkState);
+      this.setState({
+        data: nextData,
+        selectedValues
+      }, () => {
+        onChange && onChange(selectedValues);
+        onSelect && onSelect(activeNode, nextData, layer);
+      });
+    }
   }
 
   render() {
-    const { multiple, onChange, ...props } = this.props;
+    const { onChange, ...props } = this.props;
     return (
       <Tree
         {...props}
+        multiple
         data={this.state.data}
         onChange={this.handleSelect}
       />

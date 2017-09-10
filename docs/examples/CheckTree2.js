@@ -6,18 +6,19 @@ class CheckTree2 extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: []
+      data: [],
+      value: ['Dave']
     };
   }
 
   componentWillMount() {
-    this.loadTreeDataAsync(3000);
+    // this.loadTreeDataAsync(3000);
   }
   loadTreeDataAsync = (timeout) => {
     setTimeout(() => {
       this.setState({
         data: treeData,
-        value: ['Dave']
+        value: ['Maya']
       });
     }, timeout);
   }
@@ -34,7 +35,7 @@ class CheckTree2 extends Component {
           defaultExpandAll
           relation={false}
           data={treeData}
-          value={value}
+          defaultValue={value}
           disabledItems={['disabled']}
           height={300}
           onExpand={(activeNode, layer) => {
