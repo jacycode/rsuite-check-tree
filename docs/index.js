@@ -11,7 +11,7 @@ import './less/index.less';
 import CheckTree1 from './examples/CheckTree1';
 import CheckTree2 from './examples/CheckTree2';
 import ControlledTree from './examples/ControlledTree';
-import LoadDataTree from './examples/loadData';
+import DynamicTree from './examples/dynamic';
 
 
 class App extends Component {
@@ -55,8 +55,14 @@ class App extends Component {
             {require('./md/checkTree2.md')}
           </Markdown>
           <br />
-          <h5><code>受控组件</code></h5>
+          {/* <h5><code>受控组件</code></h5>
           <ControlledTree />
+          <Markdown>
+            {require('./md/checkTree2.md')}
+          </Markdown>
+          <br /> */}
+          <h5><code>异步加载数据</code></h5>
+          <DynamicTree />
           <Markdown>
             {require('./md/checkTree2.md')}
           </Markdown>

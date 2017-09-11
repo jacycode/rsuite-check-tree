@@ -157,6 +157,7 @@ export default [
   },
   {
     label: 'Bar',
-    value: 'Bar'
+    value: 'Bar',
+    children: []
   }
 ];
