@@ -1,4 +1,4 @@
-![Travis](https://img.shields.io/travis/rsuite/rsuite-inputnumber.svg)](https://travis-ci.org/rsuite/rsuite-check-tree) [npm](https://img.shields.io/npm/v/rsuite-check-tree.svg)](https://www.npmjs.com/package/rsuite-check-tree)
+[![Travis](https://img.shields.io/travis/rsuite/rsuite-check-tree.svg)](https://travis-ci.org/rsuite/rsuite-check-tree) [![npm](https://img.shields.io/npm/v/rsuite-notification.svg)](https://www.npmjs.com/package/rsuite-check-tree)
 # rsuite-tree
 
 check 树形控件
