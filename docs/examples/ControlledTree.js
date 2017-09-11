@@ -12,37 +12,12 @@ class CheckTree2 extends Component {
     };
   }
 
-  componentDidMount() {
-    // this.loadTreeDataAsync(3000);
-  }
-
-  handleOnClick = () => {
-    this.setState({
-      data: treeData
-    });
-  }
-
-  handleOnAdd = () => {
-    const nextData = _.cloneDeep(treeData);
-    nextData.push({
-      label: 'New Added',
-      value: 'New Added'
-    });
-    this.setState({
-      data: nextData,
-    });
-  }
-
   handleOnChange = (values) => {
     this.setState((preveState) => {
       return {
         selectedValues: [...preveState.selectedValues, ...values]
       };
     });
-  }
-
-  hanldeOnSelect = (activeNode, nextData, layer) => {
-    // console.log(activeNode, nextData, layer);
   }
 
   render() {
@@ -62,12 +37,10 @@ class CheckTree2 extends Component {
             console.log(activeNode, layer);
           }}
           onChange={this.handleOnChange}
-          onSelect={this.hanldeOnSelect}
         />
       </div>
     );
   }
 }
-
 
 export default CheckTree2;

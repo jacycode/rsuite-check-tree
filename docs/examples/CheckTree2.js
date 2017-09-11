@@ -10,22 +10,6 @@ class CheckTree2 extends Component {
       value: ['Dave']
     };
   }
-
-  componentWillMount() {
-    // this.loadTreeDataAsync(3000);
-  }
-  loadTreeDataAsync = (timeout) => {
-    setTimeout(() => {
-      this.setState({
-        data: treeData,
-        value: ['Maya']
-      });
-    }, timeout);
-  }
-
-  handleOnChange = (activeNode, layer, event) => {
-    console.log(activeNode, layer, event);
-  }
   render() {
     const { data, value } = this.state;
 
@@ -41,12 +25,10 @@ class CheckTree2 extends Component {
           onExpand={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}
-          onChange={this.handleOnChange}
         />
       </div>
     );
   }
 }
-
 
 export default CheckTree2;

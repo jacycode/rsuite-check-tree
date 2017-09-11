@@ -1,24 +1,28 @@
 ```js
 import React from 'react';
-import { CheckTree } from 'rsuite-tree';
+import CheckTree from '../../src';
 import treeData from '../data/treeData';
 
 
-export default React.createClass({
+const CheckTree1 = props => (
+  <div className="doc-example">
+    <CheckTree
+      defaultExpandAll
+      data={treeData}
+      height={300}
+      defaultValue={['Dave']}
+      onExpand={(activeNode, layer) => {
+        console.log(activeNode, layer);
+      }}
+      onChange={(activeNode, layer, event) => {
+        console.log(activeNode, layer, event);
+      }}
+    />
+  </div>
+);
 
-    render() {
-        return (
-            <div className="doc-example">
-                <CheckTree
-                    defaultExpandAll
-                    data={treeData}
-                    height={300}
-                    onSelectNode={(activeNode, allNodes, layer) => {
-                        console.log(activeNode, allNodes, layer);
-                    }} />
-            </div>
-        );
-    }
-});
+export default CheckTree1;
+
+
 
 ```

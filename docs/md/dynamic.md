@@ -1,3 +1,4 @@
+```js
 import React, { Component } from 'react';
 import _ from 'lodash';
 import CheckTree from '../../src';
@@ -135,3 +136,5 @@ class CheckTree2 extends Component {
 }
 
 export default CheckTree2;
+
+```

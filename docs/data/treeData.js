@@ -153,7 +153,7 @@ export default [
   {
     label: 'Checked node',
     value: 'checked',
-    checked: true
+    checked: true,
   },
   {
     label: 'Bar',

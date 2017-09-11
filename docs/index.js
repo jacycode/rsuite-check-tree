@@ -22,7 +22,7 @@ class App extends Component {
           <div className='container'>
             <Navbar.Header>
               <Navbar.Brand>
-                <a href='#'><span className='prefix'>R</span>Suite  Tree</a>
+                <a href='#'><span className='prefix'>R</span>Suite CheckTree</a>
               </Navbar.Brand>
               <Navbar.Toggle />
             </Navbar.Header>
@@ -34,7 +34,7 @@ class App extends Component {
               </Nav>
               <Nav pullRight>
                 <Nav.Item href="https://rsuite.github.io">RSuite</Nav.Item>
-                <Nav.Item href='https://github.com/rsuite/rsuite-tree'>GitHub</Nav.Item>
+                <Nav.Item href='https://github.com/rsuite/rsuite-check-tree'>GitHub</Nav.Item>
               </Nav>
             </Navbar.Collapse>
           </div>
@@ -46,30 +46,32 @@ class App extends Component {
           </Markdown>
           <br />
           <h2 id="CheckTree"><code>{'# <CheckTree>'}</code></h2>
+          <h5><code>关系状态检查</code></h5>
+          <CheckTree1 />
           <Markdown>
             {require('./md/checkTree1.md')}
           </Markdown>
           <h5><code>非关系状态检查</code></h5>
-          {/* <CheckTree2 /> */}
+          <CheckTree2 />
           <Markdown>
             {require('./md/checkTree2.md')}
           </Markdown>
           <br />
-          {/* <h5><code>受控组件</code></h5>
+          <h5><code>受控组件</code></h5>
           <ControlledTree />
           <Markdown>
-            {require('./md/checkTree2.md')}
+            {require('./md/controllerTree.md')}
           </Markdown>
-          <br /> */}
+          <br />
           <h5><code>异步加载数据</code></h5>
           <DynamicTree />
           <Markdown>
-            {require('./md/checkTree2.md')}
+            {require('./md/dynamic.md')}
           </Markdown>
           <br />
           <h2 id="API"><code>{'API'}</code></h2>
           <Markdown>
-            {require('./md/checkTreeProps.md')}
+            {require('./md/props.md')}
           </Markdown>
 
         </div>
