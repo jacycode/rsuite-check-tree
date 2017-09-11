@@ -1,7 +1,7 @@
 ```js
 import React, { Component } from 'react';
 import _ from 'lodash';
-import CheckTree from '../../src';
+import CheckTree from 'rsuite-check-tree';
 import treeData from '../data/treeData';
 
 

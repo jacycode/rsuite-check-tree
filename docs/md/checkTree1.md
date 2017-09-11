@@ -1,6 +1,6 @@
 ```js
 import React from 'react';
-import CheckTree from '../../src';
+import CheckTree from 'rsuite-check-tree';
 import treeData from '../data/treeData';
 
 
