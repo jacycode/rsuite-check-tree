@@ -1,4 +1,5 @@
-# rsuite-tree  [![npm][npm-badge]][npm]
+![Travis](https://img.shields.io/travis/rsuite/rsuite-inputnumber.svg)](https://travis-ci.org/rsuite/rsuite-check-tree) [![npm](https://img.shields.io/npm/v/rsuite-check-tree.svg)](https://www.npmjs.com/package/rsuite-check-tree)
+# rsuite-tree
 
 check 树形控件
 
@@ -30,7 +31,3 @@ import CheckTree from 'rsuite-tree';
     />
 ```
 
-
-
-[npm-badge]: https://badge.fury.io/js/rsuite-check-tree.svg
-[npm]: http://badge.fury.io/js/rsuite-check-tree
