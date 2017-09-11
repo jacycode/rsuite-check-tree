@@ -10,7 +10,9 @@
     "lint": "eslint src  *.js",
     "test-node": "mocha --compilers js:babel-register test/*Spec.js",
     "test": "npm run lint && cross-env NODE_ENV=test karma start --single-run",
-    "publish-docs": "node docs/gh-pages.js"
+    "publish-docs": "node docs/gh-pages.js",
+    "prepublish": "npm run build",
+    "publish": "npm publish"
   },
   "main": "lib/index.js",
   "author": "superman<supermanchc@gmail.com>",
@@ -24,6 +26,9 @@
     "type": "git",
     "url": "git@github.com:rsuite/rsuite-check-tree.git"
   },
+  "files": [
+    "lib"
+  ],
   "dependencies": {
     "classnames": ">=2.0.0",
     "dom-lib": "^0.2.3",

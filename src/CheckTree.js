@@ -58,10 +58,7 @@ class CheckTree extends Component {
 
       this.setState({
         selectedValues: nextProps.value,
-      }, () => {
-
       });
-
     }
   }
   /**
