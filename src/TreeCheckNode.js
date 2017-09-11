@@ -4,8 +4,6 @@ import classNames from 'classnames';
 import { hasClass } from 'dom-lib';
 import { DragSource } from 'react-drag-handler';
 
-import NodeHoc from './hoc/NodeHoc';
-
 const propTypes = {
   checkState: PropTypes.oneOf(['checked', 'halfChecked', 'unchecked']),
 };
