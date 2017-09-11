@@ -15,6 +15,7 @@ const propTypes = {
   valueKey: PropTypes.string,
   labelKey: PropTypes.string,
   childrenKey: PropTypes.string,
+  defaultExpandAll: PropTypes.bool,
   onChange: PropTypes.func,
   onExpand: PropTypes.func,
   onSelect: PropTypes.func,

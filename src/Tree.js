@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { findDOMNode } from 'react-dom';
 import classNames from 'classnames';
-import { toggleClass, addStyle, getHeight, getWidth, addClass } from 'dom-lib';
+import { toggleClass, addStyle, getHeight, getWidth, addClass, hasClass } from 'dom-lib';
 import TreeCheckNode from './TreeCheckNode';
 import InternalNode from './InternalNode';
 
@@ -106,8 +106,9 @@ class TreeView extends Component {
 
   // 展开，收起节点
   handleTreeToggle = (nodeData, layer, event) => {
-    const { onExpand } = this.props;
+    const { onExpand, loadData } = this.props;
     toggleClass(findDOMNode(this.refs[`children_${nodeData.value}`]), 'open');
+    nodeData.expand = hasClass(findDOMNode(this.refs[`children_${nodeData.value}`]), 'open');
     onExpand && onExpand(nodeData, layer);
   }
 
@@ -184,20 +185,22 @@ class TreeView extends Component {
       defaultExpandAll,
       valueKey,
       labelKey,
-      childrenKey
+      childrenKey,
+      renderTreeNode
     } = this.props;
 
     const { hasChildren, id, title, disabled, checkState } = itemData;
     const children = itemData[childrenKey];
     const value = itemData[valueKey];
     const label = itemData[labelKey];
-    const _hasChildren = (hasChildren !== undefined) ? hasChildren : (children && Array.isArray(children) && children.length > 0);
-
+    const hasNotEmptyChildren = (hasChildren !== undefined) ? hasChildren : (children && Array.isArray(children) && children.length > 0);
+    const _hasChildren = !!children;
     const props = {
       id: value || id,
       title: label || title,
       nodeData: itemData,
       onTreeToggle: this.handleTreeToggle,
+      onRenderTreeNode: renderTreeNode,
       onSelect: this.handleNodeSelect,
       onKeyDown: this.handleKeyDown,
       active: this.state.activeNode === value,
@@ -220,9 +223,9 @@ class TreeView extends Component {
 
       layer++;
 
-      //是否展开树节点
+      // 是否展开树节点且子节点不为空
       let childrenClasses = classNames('node-children', {
-        open: defaultExpandAll
+        open: defaultExpandAll && hasNotEmptyChildren
       });
 
       let nodes = children || [];
