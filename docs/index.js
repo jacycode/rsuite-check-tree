@@ -28,7 +28,6 @@ class App extends Component {
             </Navbar.Header>
             <Navbar.Collapse>
               <Nav>
-                <Nav.Item href="#Tree">Tree</Nav.Item>
                 <Nav.Item href="#CheckTree">CheckTree</Nav.Item>
                 <Nav.Item href="#API">API</Nav.Item>
               </Nav>
