@@ -19,7 +19,8 @@ const propTypes = {
   onChange: PropTypes.func,
   onExpand: PropTypes.func,
   onSelect: PropTypes.func,
-  rennderTreeNode: PropTypes.func
+  renderTreeNode: PropTypes.func,
+  renderTreeIcon: PropTypes.func
 };
 
 const defaultProps = {

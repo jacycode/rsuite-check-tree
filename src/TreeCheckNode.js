@@ -33,7 +33,7 @@ class TreeCheckNode extends Component {
     }
 
     // 如果点击的是展开 icon 就 return
-    if (hasClass(event.target, 'expand-icon')) {
+    if (hasClass(event.target.parentNode, 'expand-icon-wrapper')) {
       return;
     }
 
@@ -42,9 +42,28 @@ class TreeCheckNode extends Component {
     onSelect(nodeData, layer, event);
   }
 
+  renderIcon = () => {
+    const { onRenderTreeIcon, hasChildren, labelClickableExpand, nodeData } = this.props;
+
+    const expandIcon = (typeof onRenderTreeIcon === 'function') ? onRenderTreeIcon(nodeData) : <i className="expand-icon icon" />;
+    return hasChildren ? (
+      <div
+        className="expand-icon-wrapper"
+        onClick={e => {
+          if (labelClickableExpand) {
+            return;
+          }
+          this.handleTreeToggle(e);
+        }}
+      >
+        {expandIcon}
+      </div>
+    ) : null;
+  }
+
   renderLabel = () => {
     const { nodeData, onRenderTreeNode, title } = this.props;
-    let label = onRenderTreeNode ?
+    let label = (typeof onRenderTreeNode === 'function') ?
       onRenderTreeNode(nodeData) : title;
     return (<label className="checknode-label" title={label}>{label}</label>);
   }
@@ -63,7 +82,6 @@ class TreeCheckNode extends Component {
       labelClickableExpand,
       nodeData,
       checkState,
-      renderTreeNode,
       defaultExpandAll
     } = this.props;
 
@@ -81,19 +99,6 @@ class TreeCheckNode extends Component {
       paddingLeft: layer * 20
     };
 
-    const expandIcon = hasChildren ? (
-      <i className="expand-icon icon"
-        onClick={e => {
-
-          if (labelClickableExpand) {
-            return;
-          }
-          this.handleTreeToggle(e);
-        }}>
-      </i>
-    ) : null;
-
-
     return (
       <div
         tabIndex={-1}
@@ -105,7 +110,7 @@ class TreeCheckNode extends Component {
         style={styles}
         className={classes}
       >
-        {expandIcon}
+        {this.renderIcon()}
         {this.renderLabel()}
       </div>
     );

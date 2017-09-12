@@ -29,12 +29,17 @@
                 cursor: not-allowed;
             }
         }
+        .expand-icon-wrapper{
+          cursor: pointer;
+          position: absolute;
+          top: 2px;
+          z-index: 1;
+          .icon{
+            width: 12px;
+          }
+        }
         .expand-icon{
             width: 12px;
-            cursor: pointer;
-            position: absolute;
-            top: 2px;
-            z-index: 1;
             &:before {
                 content: "\f0da";
             }
