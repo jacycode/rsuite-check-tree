@@ -63,15 +63,18 @@ class TreeCheckNode extends Component {
       labelClickableExpand,
       nodeData,
       checkState,
-      renderTreeNode
+      renderTreeNode,
+      defaultExpandAll
     } = this.props;
 
     const classes = classNames('tree-node', {
       'text-muted': nodeData.status === 'DISABLE',
       'half-checked': checkState === 'halfChecked',
+      view: defaultExpandAll,
       checked: checkState === 'checked',
       disabled,
-      active
+      active,
+
     });
 
     const styles = {
