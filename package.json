@@ -10,9 +10,7 @@
     "lint": "eslint src  *.js",
     "test-node": "mocha --compilers js:babel-register test/*Spec.js",
     "test": "npm run lint && cross-env NODE_ENV=test karma start --single-run",
-    "publish-docs": "node docs/gh-pages.js",
-    "prepublish": "npm run build",
-    "publish": "npm publish"
+    "publish-docs": "node docs/gh-pages.js"
   },
   "main": "lib/index.js",
   "author": "superman<supermanchc@gmail.com>",
