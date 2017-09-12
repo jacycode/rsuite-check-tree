@@ -1,5 +1,5 @@
 [![Travis](https://img.shields.io/travis/rsuite/rsuite-check-tree.svg)](https://travis-ci.org/rsuite/rsuite-check-tree) [![npm](https://img.shields.io/npm/v/rsuite-notification.svg)](https://www.npmjs.com/package/rsuite-check-tree)
-# rsuite-tree
+# rsuite-check-tree
 
 check 树形控件
 
