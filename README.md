@@ -16,7 +16,7 @@ npm install rsuite-check-tree --save
 
 ```js
 
-import CheckTree from 'rsuite-tree';
+import CheckTree from 'rsuite-check-tree';
     <CheckTree
       defaultExpandAll
       data={treeData}
