@@ -88,7 +88,6 @@ class TreeCheckNode extends Component {
     const classes = classNames('tree-node', {
       'text-muted': disabled,
       'half-checked': checkState === 'halfChecked',
-      view: defaultExpandAll,
       checked: checkState === 'checked',
       disabled,
       active,

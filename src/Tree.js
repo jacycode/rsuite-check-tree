@@ -161,41 +161,20 @@ class TreeView extends Component {
   }
 
   focusPreviousItem() {
-
     const { items, activeIndex } = this.getItemsAndActiveIndex();
+
     if (items.length === 0) {
       return;
     }
+
     const prevIndex = activeIndex === 0 ? items.length - 1 : activeIndex - 1;
     this.getElementByDataKey(items[prevIndex].refKey).focus();
-  }
-
-  toggleTreeNodeClass = (nodeData) => {
-    const ele = findDOMNode(this);
-    const loop = (nodes) => {
-      nodes.forEach((node) => {
-        let curNode = ele.querySelector(`[data-key="${node.refKey}"]`);
-        if (!nodeData.expand) {
-          curNode.classList.add('view');
-        } else {
-          curNode.classList.remove('view');
-        }
-        if (node.children) {
-          loop(node.children);
-        }
-      });
-    };
-
-    if (nodeData.children) {
-      loop(nodeData.children);
-    }
   }
 
   // 展开，收起节点
   handleTreeToggle = (nodeData, layer, event) => {
     const { onExpand } = this.props;
 
-    this.toggleTreeNodeClass(nodeData);
     toggleClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
     nodeData.expand = hasClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
 
