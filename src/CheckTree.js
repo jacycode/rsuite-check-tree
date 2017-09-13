@@ -91,6 +91,16 @@ class CheckTree extends Component {
     return 'unchecked';
   }
 
+  getExpandState(node) {
+    const { childrenKey, defaultExpandAll } = this.props;
+    if (node[childrenKey] && node[childrenKey].length) {
+      if (defaultExpandAll) {
+        return ('expand' in node) ? node.expand : true;
+      }
+    }
+    return false;
+  }
+
   /**
    * 当前找到当前选中的节点
    * 同时依次查找父节点，并改变 checkState 状态: 'checked', 'halfChecked', 'unchecked'
@@ -122,6 +132,19 @@ class CheckTree extends Component {
     return false;
   }
 
+  getSelectedValues(selectValue, checkState) {
+    let selectedValues = this.state.selectedValues;
+    const key = selectedValues.indexOf(selectValue);
+    if (checkState === 'checked') {
+      selectedValues.push(selectValue);
+    } else if (checkState === 'unchecked' || !checkState) {
+      if (key !== -1) {
+        selectedValues.splice(key, 1);
+      }
+    }
+    return selectedValues;
+  }
+
   /**
    * 初始化选中的状态
    */
@@ -129,14 +152,15 @@ class CheckTree extends Component {
     const { selectedValues } = this.state;
     const { valueKey, childrenKey } = this.props;
     const loop = (nodes) => {
-      for (let i = 0; i < nodes.length; i += 1) {
-        selectedValues.forEach((node) => {
-          nodes[i].checkState = node === nodes[i][valueKey] ? 'checked' : 'unchecked';
+      nodes.forEach((node) => {
+        selectedValues.forEach((selected) => {
+          node.checkState = selected === node[valueKey] ? 'checked' : 'unchecked';
         });
-        if (nodes[i][childrenKey]) {
-          loop(nodes[i][childrenKey]);
+        node.expand = this.getExpandState(node);
+        if (node[childrenKey]) {
+          loop(node[childrenKey]);
         }
-      }
+      });
     };
     loop(this.tempNode, null);
   }
@@ -149,21 +173,21 @@ class CheckTree extends Component {
     const { valueKey, childrenKey } = this.props;
     const leafNodes = [];
     const loop = (nodes) => {
-      for (let i = 0; i < nodes.length; i += 1) {
-        selectedValues.forEach((node) => {
-          if (nodes[i][childrenKey]) {
-            if (node === nodes[i][valueKey] || nodes[i].checkState === 'checked') {
-              nodes[i].childrenKey.map((node) => node.checkState = 'checked');
+      nodes.forEach((node) => {
+        selectedValues.forEach((selected) => {
+          if (node[childrenKey]) {
+            if (node === node[valueKey] || node.checkState === 'checked') {
+              node.childrenKey.map((v) => v.checkState = 'checked');
             }
-            loop(nodes[i][childrenKey]);
+            loop(node[childrenKey]);
           } else {
-            leafNodes.push(nodes[i]);
+            leafNodes.push(node);
           }
-          if (node === nodes[i][valueKey]) {
-            nodes[i].checkState = 'checked';
+          if (selected === node[valueKey]) {
+            node.checkState = 'checked';
           }
         });
-      }
+      });
     };
     loop(this.tempNode);
     return leafNodes;
@@ -200,16 +224,17 @@ class CheckTree extends Component {
     const { valueKey, childrenKey } = this.props;
 
     const loop = (nodes, parentNode) => {
-      for (let i = 0; i < nodes.length; i += 1) {
-        nodes[i].parentNode = parentNode;
+      nodes.forEach((node) => {
+        node.expand = this.getExpandState(node);
+        node.parentNode = parentNode;
         // 同时加上 checkState 属性
-        selectedValues.forEach((node) => {
-          nodes[i].checkState = node === nodes[i][valueKey] ? 'checked' : 'unchecked';
+        selectedValues.forEach((selected) => {
+          node.checkState = selected === node[valueKey] ? 'checked' : 'unchecked';
         });
-        if (nodes[i][childrenKey]) {
-          loop(nodes[i][childrenKey], nodes[i]);
+        if (node[childrenKey]) {
+          loop(node[childrenKey], node);
         }
-      }
+      });
     };
     loop(this.tempNode, null);
   }
@@ -233,18 +258,6 @@ class CheckTree extends Component {
     }
   }
 
-  getSelectedValues(selectValue, checkState) {
-    let selectedValues = this.state.selectedValues;
-    const key = selectedValues.indexOf(selectValue);
-    if (checkState === 'checked') {
-      selectedValues.push(selectValue);
-    } else if (checkState === 'unchecked' || !checkState) {
-      if (key !== -1) {
-        selectedValues.splice(key, 1);
-      }
-    }
-    return selectedValues;
-  }
   /**
    * 选择某个节点后的回调函数
    * @param {object} activeNodeData   节点的数据

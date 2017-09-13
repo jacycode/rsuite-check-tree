@@ -35,7 +35,9 @@ const propTypes = {
   valueKey: PropTypes.string,
   labelKey: PropTypes.string,
   childrenKey: PropTypes.string,
-  activeNode: PropTypes.object
+  activeNode: PropTypes.object,
+  renderTreeNode: PropTypes.func,
+  renderTreeIcon: PropTypes.func
 };
 
 const defaultProps = {
@@ -209,7 +211,8 @@ class TreeView extends Component {
       valueKey,
       labelKey,
       childrenKey,
-      renderTreeNode
+      renderTreeNode,
+      renderTreeIcon,
     } = this.props;
 
     const { hasChildren, id, title, disabled, checkState } = itemData;
@@ -224,6 +227,7 @@ class TreeView extends Component {
       nodeData: itemData,
       onTreeToggle: this.handleTreeToggle,
       onRenderTreeNode: renderTreeNode,
+      onRenderTreeIcon: renderTreeIcon,
       onSelect: this.handleNodeSelect,
       onKeyDown: this.handleKeyDown,
       active: this.state.activeNode === value,
