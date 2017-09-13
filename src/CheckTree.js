@@ -110,31 +110,35 @@ class CheckTree extends Component {
   getActiveNode = (nodes, value) => {
 
     const { relation, valueKey, childrenKey } = this.props;
-
-    for (let i = 0; i < nodes.length; i += 1) {
-      if (nodes[i][valueKey] === value) {
-        nodes[i].checkState = nodes[i].checkState !== 'checked' ? 'checked' : 'unchecked';
-        return nodes[i];
-      } else if (nodes[i][childrenKey]) {
-        let activeNode = this.getActiveNode(nodes[i][childrenKey], value);
+    nodes.forEach((node) => {
+      if (_.isEqual(node[valueKey], value)) {
+        node.checkState = node.checkState !== 'checked' ? 'checked' : 'unchecked';
+        return node;
+      } else if (node[childrenKey]) {
+        let activeNode = this.getActiveNode(node[childrenKey], value);
         if (activeNode) {
           if (relation) {
-            let checkedNodes = nodes[i][childrenKey].filter((node) => {
-              return node.checkState === 'checked' ||
-                node.checkState === 'halfChecked';
+            let checkedNodes = node[childrenKey].filter((n) => {
+              return n.checkState === 'checked' ||
+                n.checkState === 'halfChecked';
             });
-            nodes[i].checkState = this.getCheckState(checkedNodes, nodes[i]);
+            node.checkState = this.getCheckState(checkedNodes, node);
           }
           return activeNode;
         }
       }
-    }
+    });
     return false;
   }
 
   getSelectedValues(selectValue, checkState) {
     let selectedValues = this.state.selectedValues;
-    const key = selectedValues.indexOf(selectValue);
+    let key = -1;
+    selectedValues.forEach((value, index) => {
+      if (_.isEqual(selectedValues, value)) {
+        key = index;
+      }
+    });
     if (checkState === 'checked') {
       selectedValues.push(selectValue);
     } else if (checkState === 'unchecked' || !checkState) {
@@ -154,7 +158,7 @@ class CheckTree extends Component {
     const loop = (nodes) => {
       nodes.forEach((node) => {
         selectedValues.forEach((selected) => {
-          node.checkState = selected === node[valueKey] ? 'checked' : 'unchecked';
+          node.checkState = _.isEqual(selected, node[valueKey]) ? 'checked' : 'unchecked';
         });
         node.expand = this.getExpandState(node);
         if (node[childrenKey]) {
@@ -176,14 +180,14 @@ class CheckTree extends Component {
       nodes.forEach((node) => {
         selectedValues.forEach((selected) => {
           if (node[childrenKey]) {
-            if (node === node[valueKey] || node.checkState === 'checked') {
-              node.childrenKey.map((v) => v.checkState = 'checked');
+            if (_.isEqual(node, node[valueKey]) || node.checkState === 'checked') {
+              node[childrenKey].map((v) => v.checkState = 'checked');
             }
             loop(node[childrenKey]);
           } else {
             leafNodes.push(node);
           }
-          if (selected === node[valueKey]) {
+          if (_.isEqual(selected, node[valueKey])) {
             node.checkState = 'checked';
           }
         });
@@ -229,7 +233,7 @@ class CheckTree extends Component {
         node.parentNode = parentNode;
         // 同时加上 checkState 属性
         selectedValues.forEach((selected) => {
-          node.checkState = selected === node[valueKey] ? 'checked' : 'unchecked';
+          node.checkState = _.isEqual(selected, node[valueKey]) ? 'checked' : 'unchecked';
         });
         if (node[childrenKey]) {
           loop(node[childrenKey], node);

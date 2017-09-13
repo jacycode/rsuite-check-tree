@@ -99,11 +99,11 @@ class CheckTree2 extends Component {
   renderTreeIcon = (nodeData) => {
     if (nodeData.expand) {
       return (
-        <i className="icon-angle-down icon " />
+        <i className="icon-minus-square-o icon " />
       );
     }
     return (
-      <i className="icon-angle-right icon " />
+      <i className="icon-plus-square-o icon " />
     );
   }
 

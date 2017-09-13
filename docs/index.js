@@ -46,24 +46,24 @@ class App extends Component {
           <br />
           <h2 id="CheckTree"><code>{'# <CheckTree>'}</code></h2>
           <h5><code>关系状态检查</code></h5>
-          {/* <CheckTree1 /> */}
+          <CheckTree1 />
           <Markdown>
             {require('./md/checkTree1.md')}
           </Markdown>
           <h5><code>非关系状态检查</code></h5>
-          {/* <CheckTree2 /> */}
+          <CheckTree2 />
           <Markdown>
             {require('./md/checkTree2.md')}
           </Markdown>
           <br />
           <h5><code>受控组件</code></h5>
-          {/* <ControlledTree /> */}
+          <ControlledTree />
           <Markdown>
             {require('./md/controllerTree.md')}
           </Markdown>
           <br />
           <h5><code>异步加载数据</code></h5>
-          {/* <DynamicTree /> */}
+          <DynamicTree />
           <Markdown>
             {require('./md/dynamic.md')}
           </Markdown>
