@@ -1,4 +1,4 @@
-/*! Last update: Tue Sep 12 2017 16:56:33 GMT+0800 (CST) */
+/*! Last update: Wed Sep 13 2017 22:41:39 GMT+0800 (CST) */
 /**灰色色阶为公用颜色**/
 /**主题**/
 .tree-view {
@@ -26,12 +26,17 @@
 .tree-view .tree-node.disabled label {
   cursor: not-allowed;
 }
-.tree-view .tree-node .expand-icon {
-  width: 12px;
+.tree-view .tree-node .expand-icon-wrapper {
   cursor: pointer;
   position: absolute;
   top: 2px;
   z-index: 1;
+}
+.tree-view .tree-node .expand-icon-wrapper .icon {
+  width: 12px;
+}
+.tree-view .tree-node .expand-icon {
+  width: 12px;
 }
 .tree-view .tree-node .expand-icon:before {
   content: "\F0DA";
