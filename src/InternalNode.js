@@ -6,8 +6,8 @@ class InternalNode extends Component {
   render() {
     const {
       className,
-      key,
       children,
+      nodeData,
       ...props
     } = this.props;
 
@@ -15,9 +15,8 @@ class InternalNode extends Component {
     return (
       <div
         className={className}
-        key={key}
       >
-        <Node {...props} />
+        <Node {...this.props} />
         <div className="children" >
           {children}
         </div>

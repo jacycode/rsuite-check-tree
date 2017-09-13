@@ -38,7 +38,8 @@ class CheckTree extends Component {
     const nextValue = props.value || props.defaultValue || [];
     this.state = {
       data: [],
-      selectedValues: nextValue
+      selectedValues: nextValue,
+      defaultExpandAll: props.defaultExpandAll
     };
   }
   componentWillMount() {
@@ -94,9 +95,12 @@ class CheckTree extends Component {
   getExpandState(node) {
     const { childrenKey, defaultExpandAll } = this.props;
     if (node[childrenKey] && node[childrenKey].length) {
-      if (defaultExpandAll) {
-        return ('expand' in node) ? node.expand : true;
+      if ('expand' in node) {
+        return !!node.expand;
+      } else if (defaultExpandAll) {
+        return true;
       }
+      return false;
     }
     return false;
   }
@@ -155,18 +159,20 @@ class CheckTree extends Component {
   initCheckedState = () => {
     const { selectedValues } = this.state;
     const { valueKey, childrenKey } = this.props;
-    const loop = (nodes) => {
-      nodes.forEach((node) => {
+    let level = 0;
+    const loop = (nodes, ref) => {
+      nodes.forEach((node, index) => {
+        node.refKey = `${ref}-${index}`;
         selectedValues.forEach((selected) => {
           node.checkState = _.isEqual(selected, node[valueKey]) ? 'checked' : 'unchecked';
         });
         node.expand = this.getExpandState(node);
         if (node[childrenKey]) {
-          loop(node[childrenKey]);
+          loop(node[childrenKey], node.refKey);
         }
       });
     };
-    loop(this.tempNode, null);
+    loop(this.tempNode, level);
   }
 
   /**
@@ -226,9 +232,10 @@ class CheckTree extends Component {
   createParentNode = () => {
     const { selectedValues } = this.state;
     const { valueKey, childrenKey } = this.props;
-
-    const loop = (nodes, parentNode) => {
-      nodes.forEach((node) => {
+    let level = 0;
+    const loop = (nodes, parentNode, ref) => {
+      nodes.forEach((node, index) => {
+        node.refKey = `${ref}-${index}`;
         node.expand = this.getExpandState(node);
         node.parentNode = parentNode;
         // 同时加上 checkState 属性
@@ -236,11 +243,11 @@ class CheckTree extends Component {
           node.checkState = _.isEqual(selected, node[valueKey]) ? 'checked' : 'unchecked';
         });
         if (node[childrenKey]) {
-          loop(node[childrenKey], node);
+          loop(node[childrenKey], node, node.refKey);
         }
       });
     };
-    loop(this.tempNode, null);
+    loop(this.tempNode, null, level);
   }
 
   /**
@@ -287,6 +294,16 @@ class CheckTree extends Component {
     }
   }
 
+  handleToggle = (nodeData, layer) => {
+    const { onExpand } = this.props;
+    const nextData = _.cloneDeep(this.state.data);
+    this.setState({
+      data: nextData,
+    }, () => {
+      onExpand && onExpand(nodeData, layer);
+    });
+  }
+
   render() {
     const { onChange, ...props } = this.props;
     return (
@@ -294,7 +311,9 @@ class CheckTree extends Component {
         {...props}
         multiple
         data={this.state.data}
+        defaultExpandAll={this.state.defaultExpandAll}
         onChange={this.handleSelect}
+        onExpand={this.handleToggle}
       />
     );
   }

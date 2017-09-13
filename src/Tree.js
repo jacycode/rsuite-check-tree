@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import { findDOMNode } from 'react-dom';
 import classNames from 'classnames';
 import { toggleClass, addStyle, getHeight, getWidth, addClass, hasClass } from 'dom-lib';
@@ -90,19 +91,37 @@ class TreeView extends Component {
     return false;
   }
 
-  getFocusableMenuItems() {
-    const node = findDOMNode(this);
-    if (!node) {
-      return [];
-    }
-    return Array.from(node.querySelectorAll('[tabIndex="-1"].tree-node.view')).filter((item) => {
-      return !~item.className.indexOf('disabled');
-    });
+  getFocusableMenuItems = () => {
+    const { data, childrenKey } = this.props;
+
+    let items = [];
+    const loop = (nodes) => {
+      nodes.forEach((node) => {
+        if (!node.disabled) {
+          items.push(node);
+          if (!node.expand) {
+            return;
+          }
+          if (node[childrenKey]) {
+            loop(node[childrenKey]);
+          }
+        }
+      });
+    };
+
+    loop(data);
+    return items;
   }
 
   getItemsAndActiveIndex() {
     const items = this.getFocusableMenuItems();
-    const activeIndex = items.indexOf(document.activeElement);
+
+    let activeIndex = 0;
+    items.forEach((item, index) => {
+      if (item.refKey === document.activeElement.getAttribute('data-key')) {
+        activeIndex = index;
+      }
+    });
     return { items, activeIndex };
   }
 
@@ -115,6 +134,11 @@ class TreeView extends Component {
       nodeData,
       layer
     };
+  }
+
+  getElementByDataKey = (dataKey) => {
+    const ele = findDOMNode(this);
+    return ele.querySelector(`[data-key="${dataKey}"]`);
   }
 
   selectActiveItem = (event) => {
@@ -133,7 +157,7 @@ class TreeView extends Component {
       return;
     }
     const nextIndex = activeIndex === items.length - 1 ? 0 : activeIndex + 1;
-    items[nextIndex].focus();
+    this.getElementByDataKey(items[nextIndex].refKey).focus();
   }
 
   focusPreviousItem() {
@@ -143,14 +167,19 @@ class TreeView extends Component {
       return;
     }
     const prevIndex = activeIndex === 0 ? items.length - 1 : activeIndex - 1;
-    items[prevIndex].focus();
+    this.getElementByDataKey(items[prevIndex].refKey).focus();
   }
 
   toggleTreeNodeClass = (nodeData) => {
     const ele = findDOMNode(this);
     const loop = (nodes) => {
       nodes.forEach((node) => {
-        toggleClass(ele.querySelector(`[data-value="${node.value}"]`), 'view');
+        let curNode = ele.querySelector(`[data-key="${node.refKey}"]`);
+        if (!nodeData.expand) {
+          curNode.classList.add('view');
+        } else {
+          curNode.classList.remove('view');
+        }
         if (node.children) {
           loop(node.children);
         }
@@ -165,16 +194,19 @@ class TreeView extends Component {
   // 展开，收起节点
   handleTreeToggle = (nodeData, layer, event) => {
     const { onExpand } = this.props;
+
     this.toggleTreeNodeClass(nodeData);
-    toggleClass(findDOMNode(this.refs[`children_${nodeData.value}`]), 'open');
-    nodeData.expand = hasClass(findDOMNode(this.refs[`children_${nodeData.value}`]), 'open');
+    toggleClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
+    nodeData.expand = hasClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
+
     onExpand && onExpand(nodeData, layer);
   }
 
   handleNodeSelect = (nodeData, layer, event) => {
+    const { valueKey } = this.props;
 
     this.setState({
-      activeNode: nodeData.value
+      activeNode: nodeData[valueKey]
     }, () => {
       const { onChange } = this.props;
       onChange && onChange(nodeData, layer, event);
@@ -183,17 +215,17 @@ class TreeView extends Component {
 
   handleKeyDown = (event) => {
     switch (event.keyCode) {
-      //down
+      // down
       case 40:
         this.focusNextItem();
         event.preventDefault();
         break;
-      //up
+      // up
       case 38:
         this.focusPreviousItem();
         event.preventDefault();
         break;
-      //enter
+      // enter
       case 13:
         this.selectActiveItem(event);
         event.preventDefault();
@@ -215,7 +247,7 @@ class TreeView extends Component {
       renderTreeIcon,
     } = this.props;
 
-    const { hasChildren, id, title, disabled, checkState } = itemData;
+    const { hasChildren, id, title, checkState } = itemData;
     const children = itemData[childrenKey];
     const value = itemData[valueKey];
     const label = itemData[labelKey];
@@ -232,7 +264,7 @@ class TreeView extends Component {
       onKeyDown: this.handleKeyDown,
       active: this.state.activeNode === value,
       hasChildren: _hasChildren,
-      disabled: disabledItems.filter((disabledItem) => disabledItem === value).length > 0,
+      disabled: disabledItems.filter(disabledItem => _.isEqual(disabledItem, value)).length > 0,
       children,
       index,
       layer,
@@ -244,11 +276,11 @@ class TreeView extends Component {
 
     const Node = TreeCheckNode;
 
-    const refKey = `children_${itemData.value}`;
+    const refKey = itemData.refKey;
 
     if (_hasChildren) {
 
-      layer++;
+      layer += 1;
 
       // 是否展开树节点且子节点不为空
       let childrenClasses = classNames('node-children', {
@@ -259,7 +291,7 @@ class TreeView extends Component {
       return (
         <InternalNode
           className={childrenClasses}
-          key={index}
+          key={itemData.refKey}
           ref={refKey}
           multiple={true}
           {...props}
@@ -269,7 +301,7 @@ class TreeView extends Component {
       );
     }
 
-    return (<Node key={index}  {...props} ref={refKey} />);
+    return (<Node key={itemData.refKey} {...props} ref={refKey} />);
   }
 
   render() {
