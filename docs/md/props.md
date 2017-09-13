@@ -10,6 +10,7 @@ onChange             | function         |         | 数据改变的回调函数
 onExpand             | function         |         | 树节点展示时的回调
 onSelect             | function         |         | 选择树节点后的回调函数
 renderTreeNode       | function         |         | 自定义渲染 tree 节点
+renderTreeIcon       | function         |         | 自定义渲染 图标
 disabledItems        | array            |         | 禁用节点列表
 defaultExpandAll     | bool             | false   | 默认展开所有节点
 relation             | bool             | false   | 点击某个节点是否影响其他节点的状态变化
