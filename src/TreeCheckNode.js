@@ -86,7 +86,7 @@ class TreeCheckNode extends Component {
     } = this.props;
 
     const classes = classNames('tree-node', {
-      'text-muted': nodeData.status === 'DISABLE',
+      'text-muted': disabled,
       'half-checked': checkState === 'halfChecked',
       view: defaultExpandAll,
       checked: checkState === 'checked',
@@ -106,7 +106,7 @@ class TreeCheckNode extends Component {
         onKeyDown={onKeyDown}
         ref="node"
         data-value={id}
-        data-layer={layer}
+        data-key={nodeData.refKey}
         style={styles}
         className={classes}
       >
