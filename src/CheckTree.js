@@ -114,27 +114,25 @@ class CheckTree extends Component {
    * @param {any} value
    */
   getActiveNode = (nodes, value) => {
-
     const { relation, valueKey, childrenKey } = this.props;
-    nodes.forEach((node) => {
-      if (_.isEqual(node[valueKey], value)) {
-        node.checkState = node.checkState !== 'checked' ? 'checked' : 'unchecked';
-        return node;
-      } else if (node[childrenKey]) {
-        let activeNode = this.getActiveNode(node[childrenKey], value);
+    for (let i = 0; i < nodes.length; i += 1) {
+      if (nodes[i][valueKey] === value) {
+        nodes[i].checkState = nodes[i].checkState !== 'checked' ? 'checked' : 'unchecked';
+        return nodes[i];
+      } else if (nodes[i][childrenKey]) {
+        let activeNode = this.getActiveNode(nodes[i][childrenKey], value);
         if (activeNode) {
           if (relation) {
-            let checkedNodes = node[childrenKey].filter((n) => {
-              return n.checkState === 'checked' ||
-                n.checkState === 'halfChecked';
+            let checkedNodes = nodes[i][childrenKey].filter((node) => {
+              return node.checkState === 'checked' ||
+                node.checkState === 'halfChecked';
             });
-            node.checkState = this.getCheckState(checkedNodes, node);
+            nodes[i].checkState = this.getCheckState(checkedNodes, nodes[i]);
           }
           return activeNode;
         }
       }
-      return false;
-    });
+    }
     return false;
   }
 
@@ -289,6 +287,7 @@ class CheckTree extends Component {
       const activeNode = this.getActiveNode(nextData, activeNodeData[valueKey]);
       const selectedValues = this.getSelectedValues(activeNode[valueKey], activeNode.checkState);
       relation && this.checkChildren(activeNode[childrenKey], activeNode.checkState);
+
       this.setState({
         data: nextData,
         selectedValues
