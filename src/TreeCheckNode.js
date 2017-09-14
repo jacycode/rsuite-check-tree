@@ -2,10 +2,23 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { hasClass } from 'dom-lib';
-import { DragSource } from 'react-drag-handler';
 
 const propTypes = {
+  id: PropTypes.any,        // eslint-disable-line react/forbid-prop-types
+  title: PropTypes.any,     // eslint-disable-line react/forbid-prop-types
+  nodeData: PropTypes.object,  // eslint-disable-line react/forbid-prop-types
+  active: PropTypes.bool,
+
   checkState: PropTypes.oneOf(['checked', 'halfChecked', 'unchecked']),
+  hasChildren: PropTypes.bool,
+  labelClickableExpand: PropTypes.bool,
+  disabled: PropTypes.bool,
+  layer: PropTypes.number,
+  onTreeToggle: PropTypes.func,
+  onSelect: PropTypes.func,
+  onRenderTreeIcon: PropTypes.func,
+  onRenderTreeNode: PropTypes.func,
+  onKeyDown: PropTypes.func,
 };
 
 class TreeCheckNode extends Component {
@@ -13,13 +26,16 @@ class TreeCheckNode extends Component {
       * 展开收缩节点
       */
   handleTreeToggle = (event) => {
-    const { onTreeToggle, layer, nodeData } = this.props;
+    const { labelClickableExpand, onTreeToggle, layer, nodeData } = this.props;
+    if (labelClickableExpand) {
+      return;
+    }
     onTreeToggle(nodeData, layer, event);
   }
 
   handleSelect = (event) => {
     const {
-        onTreeToggle,
+      onTreeToggle,
       onSelect,
       hasChildren,
       labelClickableExpand,
@@ -43,18 +59,13 @@ class TreeCheckNode extends Component {
   }
 
   renderIcon = () => {
-    const { onRenderTreeIcon, hasChildren, labelClickableExpand, nodeData } = this.props;
+    const { onRenderTreeIcon, hasChildren, nodeData } = this.props;
 
     const expandIcon = (typeof onRenderTreeIcon === 'function') ? onRenderTreeIcon(nodeData) : <i className="expand-icon icon" />;
     return hasChildren ? (
       <div
         className="expand-icon-wrapper"
-        onClick={e => {
-          if (labelClickableExpand) {
-            return;
-          }
-          this.handleTreeToggle(e);
-        }}
+        onClick={this.handleTreeToggle}
       >
         {expandIcon}
       </div>
@@ -71,18 +82,12 @@ class TreeCheckNode extends Component {
   render() {
     const {
       id,
-      title,
       active,
-      index,
       layer,
-      onTreeToggle,
-      hasChildren,
       disabled,
       onKeyDown,
-      labelClickableExpand,
       nodeData,
       checkState,
-      defaultExpandAll
     } = this.props;
 
     const classes = classNames('tree-node', {

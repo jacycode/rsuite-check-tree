@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { findDOMNode } from 'react-dom';
 import classNames from 'classnames';
-import { toggleClass, addStyle, getHeight, getWidth, addClass, hasClass } from 'dom-lib';
+import { toggleClass, addClass, hasClass } from 'dom-lib';
 import TreeCheckNode from './TreeCheckNode';
 import InternalNode from './InternalNode';
 
@@ -25,18 +25,23 @@ import InternalNode from './InternalNode';
  * }]
 * */
 const propTypes = {
-  data: PropTypes.array.isRequired,
   height: PropTypes.number,
-  defaultExpandAll: PropTypes.bool,
-  onChange: PropTypes.func,
-  onExpand: PropTypes.func,
-  disabledItems: PropTypes.array,
-  value: PropTypes.array,
-  defaultValue: PropTypes.array,
+  data: React.PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
+  /**
+   * 是否关系检查
+   */
+  relation: PropTypes.bool,
+  defaultValue: PropTypes.any,  // eslint-disable-line react/forbid-prop-types
+  value: PropTypes.any,         // eslint-disable-line react/forbid-prop-types
+  disabledItems: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   valueKey: PropTypes.string,
   labelKey: PropTypes.string,
   childrenKey: PropTypes.string,
-  activeNode: PropTypes.object,
+  defaultExpandAll: PropTypes.bool,
+  activeNode: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  onChange: PropTypes.func,
+  onExpand: PropTypes.func,
+  onSelect: PropTypes.func,
   renderTreeNode: PropTypes.func,
   renderTreeIcon: PropTypes.func
 };
@@ -78,7 +83,7 @@ class TreeView extends Component {
   }
 
   getActiveElementOption(options, value) {
-    for (let i = 0; i < options.length; i++) {
+    for (let i = 0; i < options.length; i += 1) {
       if (options[i].value === value) {
         return options[i];
       } else if (options[i].children && options[i].children.length) {
@@ -172,7 +177,7 @@ class TreeView extends Component {
   }
 
   // 展开，收起节点
-  handleTreeToggle = (nodeData, layer, event) => {
+  handleTreeToggle = (nodeData, layer) => {
     const { onExpand } = this.props;
 
     toggleClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
@@ -230,8 +235,9 @@ class TreeView extends Component {
     const children = itemData[childrenKey];
     const value = itemData[valueKey];
     const label = itemData[labelKey];
-    const hasNotEmptyChildren = (hasChildren !== undefined) ? hasChildren : (children && Array.isArray(children) && children.length > 0);
-    const _hasChildren = !!children;
+    const hasNotEmptyChildren = (hasChildren !== undefined) ?
+      hasChildren :
+      (children && Array.isArray(children) && children.length > 0);
     const props = {
       id: value || id,
       title: label || title,
@@ -242,7 +248,7 @@ class TreeView extends Component {
       onSelect: this.handleNodeSelect,
       onKeyDown: this.handleKeyDown,
       active: this.state.activeNode === value,
-      hasChildren: _hasChildren,
+      hasChildren: !!children,
       disabled: disabledItems.filter(disabledItem => _.isEqual(disabledItem, value)).length > 0,
       children,
       index,
@@ -257,7 +263,7 @@ class TreeView extends Component {
 
     const refKey = itemData.refKey;
 
-    if (_hasChildren) {
+    if (props.hasChildren) {
 
       layer += 1;
 
@@ -275,7 +281,7 @@ class TreeView extends Component {
           multiple={true}
           {...props}
         >
-          {nodes.map((child, index) => this.renderNode(child, index, layer, itemData))}
+          {nodes.map((child, i) => this.renderNode(child, i, layer, itemData))}
         </InternalNode>
       );
     }
@@ -299,7 +305,13 @@ class TreeView extends Component {
     };
 
     return (
-      <div ref={(ref) => this.treeView = ref} className={classes} style={styles}>
+      <div
+        ref={(ref) => {
+          this.treeView = ref;
+        }}
+        className={classes}
+        style={styles}
+      >
         {nodes}
       </div>
     );

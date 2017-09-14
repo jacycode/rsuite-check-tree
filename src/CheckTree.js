@@ -3,15 +3,17 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Tree from './Tree';
 
+
 const propTypes = {
-  data: React.PropTypes.array.isRequired,
+  height: PropTypes.number,
+  data: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
   /**
    * 是否关系检查
    */
   relation: PropTypes.bool,
-  defaultValue: PropTypes.array,
-  value: PropTypes.array,
-  disabledItems: PropTypes.array,
+  defaultValue: PropTypes.any,  // eslint-disable-line react/forbid-prop-types
+  value: PropTypes.any,         // eslint-disable-line react/forbid-prop-types
+  disabledItems: PropTypes.any, // eslint-disable-line react/forbid-prop-types
   valueKey: PropTypes.string,
   labelKey: PropTypes.string,
   childrenKey: PropTypes.string,
@@ -209,8 +211,8 @@ class CheckTree extends Component {
    */
   initParentNodeCheckState(leafNodes) {
     const { childrenKey } = this.props;
-    const upLoop = (node) => {
-      let parentNode = node.parentNode;
+    const upLoop = (leafNode) => {
+      let parentNode = leafNode.parentNode;
       if (parentNode) {
         let checkedNodes = parentNode[childrenKey].filter((node) => {
           return node.checkState === 'checked' ||
