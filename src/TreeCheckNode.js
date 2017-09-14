@@ -64,6 +64,8 @@ class TreeCheckNode extends Component {
     const expandIcon = (typeof onRenderTreeIcon === 'function') ? onRenderTreeIcon(nodeData) : <i className="expand-icon icon" />;
     return hasChildren ? (
       <div
+        role="button"
+        tabIndex="-1"
         className="expand-icon-wrapper"
         onClick={this.handleTreeToggle}
       >
@@ -106,6 +108,7 @@ class TreeCheckNode extends Component {
     return (
       <div
         tabIndex={-1}
+        role="button"
         onClick={this.handleSelect}
         onKeyDown={onKeyDown}
         ref="node"

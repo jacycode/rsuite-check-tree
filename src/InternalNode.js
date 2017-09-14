@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import TreeCheckNode from './TreeCheckNode';
 
 class InternalNode extends Component {
@@ -7,8 +6,6 @@ class InternalNode extends Component {
     const {
       className,
       children,
-      nodeData,
-      ...props
     } = this.props;
 
     const Node = TreeCheckNode;
@@ -24,6 +21,5 @@ class InternalNode extends Component {
     );
   }
 }
-
 
 export default InternalNode;

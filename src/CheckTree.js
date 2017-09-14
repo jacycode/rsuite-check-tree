@@ -133,6 +133,7 @@ class CheckTree extends Component {
           return activeNode;
         }
       }
+      return false;
     });
     return false;
   }
@@ -189,7 +190,9 @@ class CheckTree extends Component {
         selectedValues.forEach((selected) => {
           if (node[childrenKey]) {
             if (_.isEqual(node, node[valueKey]) || node.checkState === 'checked') {
-              node[childrenKey].map((v) => v.checkState = 'checked');
+              node[childrenKey].map((v) => {
+                v.checkState = 'checked';
+              });
             }
             loop(node[childrenKey]);
           } else {

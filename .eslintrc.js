@@ -48,6 +48,7 @@ module.exports = {
     'class-methods-use-this': WARNING,
     'no-unused-expressions': [ERROR, { allowShortCircuit: true }],
     'arrow-body-style': OFF,
+    'array-callback-return': OFF,
     /**
      * https://github.com/airbnb/javascript/tree/master/react
      */

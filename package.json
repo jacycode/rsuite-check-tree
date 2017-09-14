@@ -9,7 +9,7 @@
     "tdd": "karma start",
     "lint": "eslint src  *.js",
     "test-node": "mocha --compilers js:babel-register test/*Spec.js",
-    "test": "npm run lint && cross-env NODE_ENV=test karma start --single-run",
+    "test": "npm run lint",
     "publish-docs": "node docs/gh-pages.js"
   },
   "main": "lib/index.js",
@@ -31,7 +31,8 @@
     "classnames": ">=2.0.0",
     "dom-lib": "^0.2.3",
     "react-drag-handler": "^0.0.3",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "prop-types": "^15.5.10"
   },
   "peerDependencies": {
     "react": "^0.14.9 || >=15.3.0",
@@ -75,7 +76,6 @@
     "markdown-loader": "2.0.0",
     "markdownloader": "1.0.5",
     "mocha": "^2.5.3",
-    "prop-types": "^15.5.10",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-hot-loader": "^3.0.0-beta.6",
