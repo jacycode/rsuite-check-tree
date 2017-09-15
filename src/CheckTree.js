@@ -51,7 +51,9 @@ class CheckTree extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-
+    // this.setState({
+    //   data: this.getInitialTreeData(nextProps.data)
+    // });
     if (!_.isEqual(this.props.data, nextProps.data)) {
       this.setState({
         data: this.getInitialTreeData(nextProps.data)
@@ -59,7 +61,6 @@ class CheckTree extends Component {
     }
 
     if (!_.isEqual(this.props.value, nextProps.value)) {
-
       this.setState({
         selectedValues: nextProps.value,
       });
@@ -71,7 +72,7 @@ class CheckTree extends Component {
   getInitialTreeData(data) {
 
     const { relation } = this.props;
-    this.tempNode = _.cloneDeep(data || this.props.data);
+    this.tempNode = data || this.props.data;
 
     if (relation) {
       this.createParentNode();
@@ -136,21 +137,38 @@ class CheckTree extends Component {
     return false;
   }
 
-  getSelectedValues(selectValue, checkState) {
+  getSelectedValues = (activeNode) => {
+    const { relation, valueKey, childrenKey } = this.props;
+    const checkState = activeNode.checkState;
     let selectedValues = this.state.selectedValues;
-    let key = -1;
-    selectedValues.forEach((value, index) => {
-      if (_.isEqual(selectedValues, value)) {
-        key = index;
-      }
-    });
-    if (checkState === 'checked') {
-      selectedValues.push(selectValue);
-    } else if (checkState === 'unchecked' || !checkState) {
-      if (key !== -1) {
-        selectedValues.splice(key, 1);
-      }
+
+    if (activeNode.checkState === 'checked') {
+      selectedValues.push(activeNode[valueKey]);
+    } else if (checkState === 'unchecked') {
+      _.remove(selectedValues, (value) => {
+        return value === activeNode[valueKey];
+      });
     }
+
+    const loop = (nodes) => {
+      nodes.forEach((node) => {
+        if (node.checkState === 'checked') {
+          selectedValues.push(node[valueKey]);
+        } else if (checkState === 'unchecked') {
+          _.remove(selectedValues, (value) => {
+            return value === node[valueKey];
+          });
+        }
+        if (node[childrenKey]) {
+          loop(node[childrenKey]);
+        }
+      });
+    };
+
+    if (relation && activeNode[childrenKey]) {
+      loop(activeNode[childrenKey]);
+    }
+
     return selectedValues;
   }
 
@@ -185,21 +203,16 @@ class CheckTree extends Component {
     const leafNodes = [];
     const loop = (nodes) => {
       nodes.forEach((node) => {
-        selectedValues.forEach((selected) => {
-          if (node[childrenKey]) {
-            if (_.isEqual(node, node[valueKey]) || node.checkState === 'checked') {
-              node[childrenKey].map((v) => {
-                v.checkState = 'checked';
-              });
-            }
-            loop(node[childrenKey]);
-          } else {
-            leafNodes.push(node);
+        if (node[childrenKey]) {
+          if (_.isEqual(node, node[valueKey]) || node.checkState === 'checked') {
+            node[childrenKey].map((v) => {
+              v.checkState = 'checked';
+            });
           }
-          if (_.isEqual(selected, node[valueKey])) {
-            node.checkState = 'checked';
-          }
-        });
+          loop(node[childrenKey]);
+        } else {
+          leafNodes.push(node);
+        }
       });
     };
     loop(this.tempNode);
@@ -278,29 +291,30 @@ class CheckTree extends Component {
    * @param {number} layer            节点的层级
    */
   handleSelect = (activeNodeData, layer) => {
+    const { selectedValues } = this.state;
     const { valueKey, childrenKey, onChange, onSelect, relation } = this.props;
-    const nextData = _.cloneDeep(this.state.data);
+    const nextData = this.state.data;
+
     if (
       'defaultValue' in this.props ||
       (this.isControlled && onChange)
     ) {
       const activeNode = this.getActiveNode(nextData, activeNodeData[valueKey]);
-      const selectedValues = this.getSelectedValues(activeNode[valueKey], activeNode.checkState);
       relation && this.checkChildren(activeNode[childrenKey], activeNode.checkState);
+      this.getSelectedValues(activeNode);
 
       this.setState({
-        data: nextData,
-        selectedValues
-      }, () => {
-        onChange && onChange(selectedValues);
-        onSelect && onSelect(activeNode, nextData, layer);
+        data: nextData
       });
+
+      onChange && onChange(selectedValues);
+      onSelect && onSelect(activeNode, nextData, layer);
     }
   }
 
   handleToggle = (nodeData, layer) => {
     const { onExpand } = this.props;
-    const nextData = _.cloneDeep(this.state.data);
+    const nextData = this.state.data;
     this.setState({
       data: nextData,
     }, () => {
