@@ -8,7 +8,7 @@ const newTreeData = [{
   value: 'children1',
   label: 'children1'
 }];
-class CheckTree2 extends Component {
+class Dynamic extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -18,11 +18,9 @@ class CheckTree2 extends Component {
   }
 
   componentDidMount() {
-    // this.loadTreeDataAsync(3000);
   }
 
   setTreeData = (child, activeNode, layer, treeNodes) => {
-    const nextTreeData = _.cloneDeep(treeNodes);
     if (layer < 0) {
       return;
     }
@@ -38,16 +36,16 @@ class CheckTree2 extends Component {
       });
     };
 
-    loop(nextTreeData);
+    loop(treeNodes);
 
     this.setState({
-      data: nextTreeData
+      data: treeNodes
     });
   }
 
   setLoading(activeNode, loading = true) {
     const { data } = this.state;
-    const nextTreeData = _.cloneDeep(data);
+    const nextTreeData = data;
     const loop = (nodes) => {
       nodes.forEach((node) => {
         if (node.value === activeNode.value) {
@@ -65,32 +63,27 @@ class CheckTree2 extends Component {
     });
   }
 
-  loadData = (avtiveNode, layer) => {
+  loadData = (activeNode, layer) => {
     const { data } = this.state;
+    const nextTreeData = _.cloneDeep(data);
     return new Promise((resolve) => {
       setTimeout(() => {
-        this.setTreeData(newTreeData, avtiveNode, layer, data);
+        this.setTreeData(newTreeData, activeNode, layer, nextTreeData);
         resolve();
       }, 2000);
     });
   }
 
-  handleOnClick = () => {
-    this.setState({
-      data: treeData
-    });
-  }
-
 
   handleOnChange = (values) => {
-    this.setState((preveState) => {
-      return {
-        selectedValues: [...preveState.selectedValues, ...values]
-      };
+    console.log(values);
+    this.setState({
+      selectedValues: values
     });
   }
 
   handleOnExpand = (activeNode, layer) => {
+    console.log(activeNode);
     if (activeNode.children.length === 0) {
       activeNode.expand && this.setLoading(activeNode, true);
       this.loadData(activeNode, layer)
@@ -119,7 +112,7 @@ class CheckTree2 extends Component {
         <CheckTree
           test={test}
           defaultExpandAll
-          relation={true}
+          relation={false}
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}
@@ -134,4 +127,4 @@ class CheckTree2 extends Component {
   }
 }
 
-export default CheckTree2;
+export default Dynamic;

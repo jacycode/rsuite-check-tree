@@ -40,10 +40,6 @@ class App extends Component {
         </Header>
 
         <div className='container'>
-          <Markdown>
-            {require('../README.md')}
-          </Markdown>
-          <br />
           <h2 id="CheckTree"><code>{'# <CheckTree>'}</code></h2>
           <h5><code>关系状态检查</code></h5>
           <CheckTree1 />

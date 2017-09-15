@@ -4,7 +4,7 @@ import _ from 'lodash';
 import CheckTree from 'rsuite-check-tree';
 import treeData from '../data/treeData';
 
-class CheckTree2 extends Component {
+class ControlledTree extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,9 +14,10 @@ class CheckTree2 extends Component {
   }
 
   handleOnChange = (values) => {
+    console.log(values);
     this.setState((preveState) => {
       return {
-        selectedValues: [...preveState.selectedValues, ...values]
+        selectedValues: values
       };
     });
   }
@@ -29,7 +30,7 @@ class CheckTree2 extends Component {
         <CheckTree
           test={test}
           defaultExpandAll
-          relation={true}
+          relation={false}
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}
@@ -44,6 +45,6 @@ class CheckTree2 extends Component {
   }
 }
 
-export default CheckTree2;
+export default ControlledTree;
 
 ```

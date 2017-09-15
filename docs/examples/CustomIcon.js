@@ -114,7 +114,7 @@ class CheckTree2 extends Component {
       <div className="doc-example">
         <CheckTree
           test={test}
-          relation={true}
+          relation={false}
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}
