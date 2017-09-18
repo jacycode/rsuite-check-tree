@@ -105,12 +105,11 @@ class Dynamic extends Component {
   }
 
   render() {
-    const { data, selectedValues, test } = this.state;
+    const { data, selectedValues } = this.state;
 
     return (
       <div className="doc-example">
         <CheckTree
-          test={test}
           defaultExpandAll
           relation={false}
           data={data}

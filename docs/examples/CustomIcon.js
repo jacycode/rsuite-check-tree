@@ -108,12 +108,11 @@ class CheckTree2 extends Component {
   }
 
   render() {
-    const { data, selectedValues, test } = this.state;
+    const { data, selectedValues } = this.state;
 
     return (
       <div className="doc-example">
         <CheckTree
-          test={test}
           relation={false}
           data={data}
           value={selectedValues}
