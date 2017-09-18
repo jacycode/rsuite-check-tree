@@ -113,6 +113,7 @@ class CheckTree2 extends Component {
     return (
       <div className="doc-example">
         <CheckTree
+          defaultExpandAll
           relation={false}
           data={data}
           value={selectedValues}
