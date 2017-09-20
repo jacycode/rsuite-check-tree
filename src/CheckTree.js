@@ -117,7 +117,7 @@ class CheckTree extends Component {
   getActiveNode = (nodes, value) => {
     const { relation, valueKey, childrenKey } = this.props;
     for (let i = 0; i < nodes.length; i += 1) {
-      if (nodes[i][valueKey] === value) {
+      if (_.isEqual(nodes[i][valueKey], value)) {
         nodes[i].checkState = nodes[i].checkState !== 'checked' ? 'checked' : 'unchecked';
         return nodes[i];
       } else if (nodes[i][childrenKey]) {
@@ -137,37 +137,21 @@ class CheckTree extends Component {
     return false;
   }
 
-  getSelectedValues = (activeNode) => {
-    const { relation, valueKey, childrenKey } = this.props;
-    const checkState = activeNode.checkState;
-    let selectedValues = this.state.selectedValues;
-
-    if (activeNode.checkState === 'checked') {
-      selectedValues.push(activeNode[valueKey]);
-    } else if (checkState === 'unchecked') {
-      _.remove(selectedValues, (value) => {
-        return value === activeNode[valueKey];
-      });
-    }
+  getSelectedValues = (nextData) => {
+    const { valueKey, childrenKey } = this.props;
+    let selectedValues = [];
 
     const loop = (nodes) => {
       nodes.forEach((node) => {
         if (node.checkState === 'checked') {
           selectedValues.push(node[valueKey]);
-        } else if (checkState === 'unchecked') {
-          _.remove(selectedValues, (value) => {
-            return value === node[valueKey];
-          });
         }
         if (node[childrenKey]) {
           loop(node[childrenKey]);
         }
       });
     };
-
-    if (relation && activeNode[childrenKey]) {
-      loop(activeNode[childrenKey]);
-    }
+    loop(nextData);
 
     return selectedValues;
   }
@@ -291,7 +275,6 @@ class CheckTree extends Component {
    * @param {number} layer            节点的层级
    */
   handleSelect = (activeNodeData, layer) => {
-    const { selectedValues } = this.state;
     const { valueKey, childrenKey, onChange, onSelect, relation } = this.props;
     const nextData = this.state.data;
 
@@ -301,14 +284,14 @@ class CheckTree extends Component {
     ) {
       const activeNode = this.getActiveNode(nextData, activeNodeData[valueKey]);
       relation && this.checkChildren(activeNode[childrenKey], activeNode.checkState);
-      this.getSelectedValues(activeNode);
-
+      const selectedValues = this.getSelectedValues(nextData);
       this.setState({
-        data: nextData
+        data: nextData,
+        selectedValues
+      }, () => {
+        onChange && onChange(selectedValues);
+        onSelect && onSelect(activeNode, nextData, layer);
       });
-
-      onChange && onChange(selectedValues);
-      onSelect && onSelect(activeNode, nextData, layer);
     }
   }
 
