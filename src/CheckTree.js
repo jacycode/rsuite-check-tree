@@ -72,7 +72,7 @@ class CheckTree extends Component {
   getInitialTreeData(data) {
 
     const { relation } = this.props;
-    this.tempNode = data || this.props.data;
+    this.tempNode = _.cloneDeep(data || this.props.data);
 
     if (relation) {
       this.createParentNode();
