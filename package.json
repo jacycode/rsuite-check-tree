@@ -10,7 +10,10 @@
     "lint": "eslint src  *.js",
     "test-node": "mocha --compilers js:babel-register test/*Spec.js",
     "test": "npm run lint",
-    "publish-docs": "node docs/gh-pages.js"
+    "prepages": "npm run docs",
+    "pages": "node docs/gh-pages.js",
+    "predeploy": "npm run build",
+    "deploy": "npm publish"
   },
   "main": "lib/index.js",
   "author": "superman<supermanchc@gmail.com>",
