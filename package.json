@@ -35,8 +35,7 @@
     "dom-lib": "^0.2.3",
     "form-lib": "^0.1.2",
     "lodash": "^4.17.4",
-    "prop-types": "^15.5.10",
-    "react-drag-handler": "^0.0.3"
+    "prop-types": "^15.5.10"
   },
   "peerDependencies": {
     "react": "^0.14.9 || >=15.3.0",
@@ -84,6 +83,7 @@
     "react-dom": "^15.4.2",
     "react-hot-loader": "^3.0.0-beta.6",
     "rsuite": "^2.0.0-beta.2",
+    "rsuite-affix": "^1.0.3",
     "rsuite-theme": "0.3.29",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",

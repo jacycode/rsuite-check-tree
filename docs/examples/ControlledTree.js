@@ -32,7 +32,7 @@ class ControlledTree extends Component {
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}
-          height={300}
+          height={400}
           onExpand={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}

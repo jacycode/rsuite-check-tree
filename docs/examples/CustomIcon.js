@@ -118,7 +118,7 @@ class CheckTree2 extends Component {
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}
-          height={300}
+          height={400}
           onExpand={this.handleOnExpand}
           onChange={this.handleOnChange}
           onSelect={this.hanldeOnSelect}
