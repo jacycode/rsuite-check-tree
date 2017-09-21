@@ -166,8 +166,11 @@ class CheckTree extends Component {
     const loop = (nodes, ref) => {
       nodes.forEach((node, index) => {
         node.refKey = `${ref}-${index}`;
+        node.checkState = 'unchecked';
         selectedValues.forEach((selected) => {
-          node.checkState = _.isEqual(selected, node[valueKey]) ? 'checked' : 'unchecked';
+          if (_.isEqual(selected, node[valueKey])) {
+            node.checkState = 'checked';
+          }
         });
         node.expand = this.getExpandState(node);
         if (node[childrenKey]) {
@@ -239,8 +242,11 @@ class CheckTree extends Component {
         node.expand = this.getExpandState(node);
         node.parentNode = parentNode;
         // 同时加上 checkState 属性
+        node.checkState = 'unchecked';
         selectedValues.forEach((selected) => {
-          node.checkState = _.isEqual(selected, node[valueKey]) ? 'checked' : 'unchecked';
+          if (_.isEqual(selected, node[valueKey])) {
+            node.checkState = 'checked';
+          }
         });
         if (node[childrenKey]) {
           loop(node[childrenKey], node, node.refKey);

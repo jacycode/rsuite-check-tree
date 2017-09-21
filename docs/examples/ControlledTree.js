@@ -8,7 +8,7 @@ class ControlledTree extends Component {
     super(props);
     this.state = {
       data: treeData,
-      selectedValues: ['Dave']
+      selectedValues: ['Dave', 'Maya']
     };
   }
 
