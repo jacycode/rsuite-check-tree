@@ -51,9 +51,6 @@ class CheckTree extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // this.setState({
-    //   data: this.getInitialTreeData(nextProps.data)
-    // });
     if (!_.isEqual(this.props.data, nextProps.data)) {
       this.setState({
         data: this.getInitialTreeData(nextProps.data)
@@ -63,23 +60,23 @@ class CheckTree extends Component {
     if (!_.isEqual(this.props.value, nextProps.value)) {
       this.setState({
         selectedValues: nextProps.value,
+        data: this.getInitialTreeData(nextProps.data, nextProps.value)
       });
     }
   }
   /**
     * 初始化 TreeData
     */
-  getInitialTreeData(data) {
-
+  getInitialTreeData(data, value) {
     const { relation } = this.props;
     this.tempNode = _.cloneDeep(data || this.props.data);
 
     if (relation) {
-      this.createParentNode();
+      this.createParentNode(value);
       const leafNodes = this.initChildrenNodeCheckState();
       this.initParentNodeCheckState(leafNodes);
     } else {
-      this.initCheckedState();
+      this.initCheckedState(value);
     }
 
     return this.tempNode;
@@ -159,8 +156,8 @@ class CheckTree extends Component {
   /**
    * 初始化选中的状态
    */
-  initCheckedState = () => {
-    const { selectedValues } = this.state;
+  initCheckedState = (value) => {
+    const selectedValues = value || this.state.selectedValues;
     const { valueKey, childrenKey } = this.props;
     let level = 0;
     const loop = (nodes, ref) => {
@@ -185,7 +182,6 @@ class CheckTree extends Component {
    * 初始化子节点的 CheckState
    */
   initChildrenNodeCheckState() {
-    const { selectedValues } = this.state;
     const { valueKey, childrenKey } = this.props;
     const leafNodes = [];
     const loop = (nodes) => {
@@ -232,8 +228,8 @@ class CheckTree extends Component {
   /**
   * 给所有的节点，创建一个 parentNode 属性
   */
-  createParentNode = () => {
-    const { selectedValues } = this.state;
+  createParentNode = (value) => {
+    const selectedValues = value || this.state.selectedValues;
     const { valueKey, childrenKey } = this.props;
     let level = 0;
     const loop = (nodes, parentNode, ref) => {
