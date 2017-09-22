@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlwebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const markdownLoader = require('markdownloader').renderer;
 const { NODE_ENV } = process.env;
 
@@ -15,6 +16,7 @@ const docsPath = NODE_ENV === 'development' ? './assets' : './';
 const plugins = [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
+    new LodashModuleReplacementPlugin(),
     new webpack.DefinePlugin({
         'NODE_ENV': JSON.stringify(NODE_ENV)
     }),
