@@ -290,6 +290,7 @@ class TreeView extends Component {
   }
 
   render() {
+    const { onScroll } = this.props;
     // 树节点的层级
     let layer = 0;
 
@@ -311,6 +312,7 @@ class TreeView extends Component {
         }}
         className={classes}
         style={styles}
+        onScroll={onScroll}
       >
         {nodes}
       </div>

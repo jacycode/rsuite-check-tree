@@ -22,6 +22,7 @@ const propTypes = {
   onChange: PropTypes.func,
   onExpand: PropTypes.func,
   onSelect: PropTypes.func,
+  onScroll: PropTypes.func,
   renderTreeNode: PropTypes.func,
   renderTreeIcon: PropTypes.func
 };
