@@ -45,7 +45,7 @@ class Dynamic extends Component {
 
   setLoading(activeNode, loading = true) {
     const { data } = this.state;
-    const nextTreeData = data;
+    const nextTreeData = _.cloneDeep(data);
     const loop = (nodes) => {
       nodes.forEach((node) => {
         if (node.value === activeNode.value) {

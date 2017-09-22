@@ -1,8 +1,9 @@
 ```js
 import React, { Component } from 'react';
 import _ from 'lodash';
-import CheckTree from 'rsuite-check-tree';
+import CheckTree from '../../src';
 import treeData from '../data/treeData';
+
 
 const newTreeData = [{
   value: 'children1',
@@ -15,6 +16,9 @@ class Dynamic extends Component {
       data: treeData,
       selectedValues: ['Dave']
     };
+  }
+
+  componentDidMount() {
   }
 
   setTreeData = (child, activeNode, layer, treeNodes) => {
@@ -42,7 +46,7 @@ class Dynamic extends Component {
 
   setLoading(activeNode, loading = true) {
     const { data } = this.state;
-    const nextTreeData = data;
+    const nextTreeData = _.cloneDeep(data);
     const loop = (nodes) => {
       nodes.forEach((node) => {
         if (node.value === activeNode.value) {
@@ -70,6 +74,7 @@ class Dynamic extends Component {
       }, 2000);
     });
   }
+
 
   handleOnChange = (values) => {
     console.log(values);
@@ -111,7 +116,7 @@ class Dynamic extends Component {
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}
-          height={300}
+          height={400}
           onExpand={this.handleOnExpand}
           onChange={this.handleOnChange}
           onSelect={this.hanldeOnSelect}
@@ -123,5 +128,6 @@ class Dynamic extends Component {
 }
 
 export default Dynamic;
+
 
 ```

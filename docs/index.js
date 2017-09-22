@@ -76,9 +76,9 @@ class App extends Component {
               <h5 id="dynamic"><code>异步加载数据</code></h5>
               <DynamicTree />
               <CodeComponent md={require('./md/dynamic.md')} />
-              <Markdown>
-                {require('./md/dynamic.md')}
-              </Markdown>
+              <div>
+                <code>注意：在使用动态加载数据时，应当注意对 data 进行 深拷贝后再出入到 check-tree 组件中。如示例当中的，使用 _.cloneDeep() 对原始 data 进行深拷贝后再进行操作</code>
+              </div>
               <br />
               <h5 id="custom"><code>自定义图标</code></h5>
               <CustomIcon />
