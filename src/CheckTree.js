@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEqual from 'lodash/isEqual';
+import cloneDeep from 'lodash/cloneDeep';
 import Tree from './Tree';
 
 
@@ -51,13 +52,13 @@ class CheckTree extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!_.isEqual(this.props.data, nextProps.data)) {
+    if (!isEqual(this.props.data, nextProps.data)) {
       this.setState({
         data: this.getInitialTreeData(nextProps.data)
       });
     }
 
-    if (!_.isEqual(this.props.value, nextProps.value)) {
+    if (!isEqual(this.props.value, nextProps.value)) {
       this.setState({
         selectedValues: nextProps.value,
         data: this.getInitialTreeData(nextProps.data, nextProps.value)
@@ -69,7 +70,7 @@ class CheckTree extends Component {
     */
   getInitialTreeData(data, value) {
     const { relation } = this.props;
-    this.tempNode = _.cloneDeep(data || this.props.data);
+    this.tempNode = cloneDeep(data || this.props.data);
 
     if (relation) {
       this.createParentNode(value);
@@ -114,7 +115,7 @@ class CheckTree extends Component {
   getActiveNode = (nodes, value) => {
     const { relation, valueKey, childrenKey } = this.props;
     for (let i = 0; i < nodes.length; i += 1) {
-      if (_.isEqual(nodes[i][valueKey], value)) {
+      if (isEqual(nodes[i][valueKey], value)) {
         nodes[i].checkState = nodes[i].checkState !== 'checked' ? 'checked' : 'unchecked';
         return nodes[i];
       } else if (nodes[i][childrenKey]) {
@@ -165,7 +166,7 @@ class CheckTree extends Component {
         node.refKey = `${ref}-${index}`;
         node.checkState = 'unchecked';
         selectedValues.forEach((selected) => {
-          if (_.isEqual(selected, node[valueKey])) {
+          if (isEqual(selected, node[valueKey])) {
             node.checkState = 'checked';
           }
         });
@@ -187,7 +188,7 @@ class CheckTree extends Component {
     const loop = (nodes) => {
       nodes.forEach((node) => {
         if (node[childrenKey]) {
-          if (_.isEqual(node, node[valueKey]) || node.checkState === 'checked') {
+          if (isEqual(node, node[valueKey]) || node.checkState === 'checked') {
             node[childrenKey].map((v) => {
               v.checkState = 'checked';
             });
@@ -240,7 +241,7 @@ class CheckTree extends Component {
         // 同时加上 checkState 属性
         node.checkState = 'unchecked';
         selectedValues.forEach((selected) => {
-          if (_.isEqual(selected, node[valueKey])) {
+          if (isEqual(selected, node[valueKey])) {
             node.checkState = 'checked';
           }
         });
