@@ -1,6 +1,6 @@
 {
   "name": "rsuite-check-tree",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A react check tree component",
   "scripts": {
     "dev": "NODE_ENV=development webpack-dev-server  --inline --progress --colors --port 3100 --host 0.0.0.0 ",
