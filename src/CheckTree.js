@@ -289,18 +289,20 @@ class CheckTree extends Component {
       const activeNode = this.getActiveNode(nextData, activeNodeData[valueKey]);
       relation && this.checkChildren(activeNode[childrenKey], activeNode.checkState);
       const selectedValues = this.getSelectedValues(nextData);
+      activeNode.check = activeNode.checkState === 'checked';
       this.setState({
         data: nextData,
         selectedValues
       }, () => {
         onChange && onChange(selectedValues);
-        onSelect && onSelect(activeNode, nextData, layer);
+        onSelect && onSelect(activeNode, layer);
       });
     }
   }
 
   handleToggle = (nodeData, layer) => {
     const { onExpand } = this.props;
+    nodeData.check = nodeData.checkState === 'checked';
     const nextData = this.state.data;
     this.setState({
       data: nextData,
