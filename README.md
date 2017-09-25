@@ -32,8 +32,8 @@ import CheckTree from 'rsuite-check-tree';
       onExpand={(activeNode, layer) => {
         console.log(activeNode, layer);
       }}
-      onChange={(activeNode, layer, event) => {
-        console.log(activeNode, layer, event);
+      onChange={(activeNode, layer) => {
+        console.log(activeNode, layer);
       }}
     />
 ```

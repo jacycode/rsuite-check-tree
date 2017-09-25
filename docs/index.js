@@ -82,6 +82,7 @@ class App extends Component {
               <br />
               <h5 id="custom"><code>自定义图标</code></h5>
               <CustomIcon />
+              <CodeComponent md={require('./md/custom.md')} />
               <h2 id="API"><code>{'API'}</code></h2>
               <Markdown>
                 {require('./md/props.md')}

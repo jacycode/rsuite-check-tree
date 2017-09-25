@@ -6,9 +6,9 @@ data                 | array            |         | tree 数据
 valueKey             | string           | "value" | tree数据结构value属性名称
 labelKey             | string           | "label" | tree数据结构label属性名称
 childKey             | string           | "children" | tree数据结构children属性名称
-onChange             | function         |         | 数据改变的回调函数
-onExpand             | function         |         | 树节点展示时的回调
-onSelect             | function         |         | 选择树节点后的回调函数
+onChange             | function(values)         |         | 数据改变的回调函数
+onExpand             | function(activeNode, layer)         |         | 树节点展示时的回调
+onSelect             | function(activeNode, layer)       |         | 选择树节点后的回调函数
 renderTreeNode       | function         |         | 自定义渲染 tree 节点
 renderTreeIcon       | function         |         | 自定义渲染 图标
 disabledItems        | array            |         | 禁用节点列表

@@ -1,7 +1,7 @@
 ```js
 import React, { Component } from 'react';
 import _ from 'lodash';
-import CheckTree from '../../src';
+import CheckTree from 'rsuite-check-tree';
 import treeData from '../data/treeData';
 
 
@@ -119,7 +119,6 @@ class Dynamic extends Component {
           height={400}
           onExpand={this.handleOnExpand}
           onChange={this.handleOnChange}
-          onSelect={this.hanldeOnSelect}
           renderTreeNode={this.renderTreeNode}
         />
       </div>

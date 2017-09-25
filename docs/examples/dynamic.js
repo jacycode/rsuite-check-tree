@@ -17,8 +17,6 @@ class Dynamic extends Component {
     };
   }
 
-  componentDidMount() {
-  }
 
   setTreeData = (child, activeNode, layer, treeNodes) => {
     if (layer < 0) {
@@ -118,7 +116,6 @@ class Dynamic extends Component {
           height={400}
           onExpand={this.handleOnExpand}
           onChange={this.handleOnChange}
-          onSelect={this.hanldeOnSelect}
           renderTreeNode={this.renderTreeNode}
         />
       </div>
