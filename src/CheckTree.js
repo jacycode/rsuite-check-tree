@@ -295,7 +295,7 @@ class CheckTree extends Component {
         selectedValues
       }, () => {
         onChange && onChange(selectedValues);
-        onSelect && onSelect(activeNode, layer);
+        onSelect && onSelect(activeNode, layer, selectedValues);
       });
     }
   }
