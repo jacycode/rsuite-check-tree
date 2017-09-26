@@ -22,6 +22,9 @@ class CheckTree2 extends Component {
           defaultValue={value}
           disabledItems={['disabled']}
           height={400}
+          onSelect={(activeNode, layer) => {
+            console.log(activeNode, layer);
+          }}
           onExpand={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}

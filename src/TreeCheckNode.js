@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { hasClass } from 'dom-lib';
+import { CHECK_STATE } from './constants';
 
 const propTypes = {
-  id: PropTypes.any,        // eslint-disable-line react/forbid-prop-types
-  title: PropTypes.any,     // eslint-disable-line react/forbid-prop-types
+  label: PropTypes.any,        // eslint-disable-line react/forbid-prop-types
   nodeData: PropTypes.object,  // eslint-disable-line react/forbid-prop-types
   active: PropTypes.bool,
-
-  checkState: PropTypes.oneOf(['checked', 'halfChecked', 'unchecked']),
+  checkState: PropTypes.oneOf([CHECK_STATE.CHECK, CHECK_STATE.HALFCHECK, CHECK_STATE.UNCHECK]),
   hasChildren: PropTypes.bool,
   labelClickableExpand: PropTypes.bool,
   disabled: PropTypes.bool,
@@ -41,7 +40,8 @@ class TreeCheckNode extends Component {
       labelClickableExpand,
       layer,
       disabled,
-      nodeData
+      nodeData,
+      checkState
       } = this.props;
 
     if (disabled) {
@@ -55,6 +55,16 @@ class TreeCheckNode extends Component {
 
     // 点击title的时候，如果 title 设置为可以点击，同时又拥有子节点，则可以展开数据
     labelClickableExpand && hasChildren && onTreeToggle(nodeData, layer, event);
+
+    let isChecked = false;
+    if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
+      isChecked = true;
+    }
+
+    if (checkState === CHECK_STATE.CHECK) {
+      isChecked = false;
+    }
+    nodeData.check = isChecked;
     onSelect(nodeData, layer, event);
   }
 
@@ -75,15 +85,14 @@ class TreeCheckNode extends Component {
   }
 
   renderLabel = () => {
-    const { nodeData, onRenderTreeNode, title } = this.props;
-    let label = (typeof onRenderTreeNode === 'function') ?
-      onRenderTreeNode(nodeData) : title;
-    return (<label className="checknode-label" title={label}>{label}</label>);
+    const { nodeData, onRenderTreeNode, label } = this.props;
+    let custom = (typeof onRenderTreeNode === 'function') ?
+      onRenderTreeNode(nodeData) : label;
+    return (<label className="checknode-label" title={label}>{custom}</label>);
   }
 
   render() {
     const {
-      id,
       active,
       layer,
       disabled,
@@ -94,11 +103,10 @@ class TreeCheckNode extends Component {
 
     const classes = classNames('tree-node', {
       'text-muted': disabled,
-      'half-checked': checkState === 'halfChecked',
-      checked: checkState === 'checked',
+      'half-checked': checkState === CHECK_STATE.HALFCHECK,
+      checked: checkState === CHECK_STATE.CHECK,
       disabled,
       active,
-
     });
 
     const styles = {
@@ -112,7 +120,6 @@ class TreeCheckNode extends Component {
         onClick={this.handleSelect}
         onKeyDown={onKeyDown}
         ref="node"
-        data-value={id}
         data-key={nodeData.refKey}
         style={styles}
         className={classes}

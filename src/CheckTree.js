@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
+import { findDOMNode } from 'react-dom';
+import classNames from 'classnames';
+import { toggleClass, addClass, hasClass } from 'dom-lib';
+import TreeCheckNode from './TreeCheckNode';
+import InternalNode from './InternalNode';
 import Tree from './Tree';
+import { CHECK_STATE } from './constants';
 
 
 const propTypes = {
@@ -37,34 +43,36 @@ const defaultProps = {
 class CheckTree extends Component {
   constructor(props) {
     super(props);
+    this.nodes = {};
     this.tempNode = null;
     this.isControlled = 'value' in props;
     const nextValue = props.value || props.defaultValue || [];
+
+    this.flattenNodes(this.props.data);
+    this.unserializeLists({
+      check: nextValue
+    });
+
     this.state = {
       data: [],
       selectedValues: nextValue,
-      defaultExpandAll: props.defaultExpandAll
     };
   }
-  componentWillMount() {
-    this.setState({
-      data: this.getInitialTreeData()
-    });
-  }
+
 
   componentWillReceiveProps(nextProps) {
     if (!isEqual(this.props.data, nextProps.data)) {
-      this.setState({
-        data: this.getInitialTreeData(nextProps.data)
-      });
+      this.flattenNodes(nextProps.data);
     }
 
     if (!isEqual(this.props.value, nextProps.value)) {
       this.setState({
         selectedValues: nextProps.value,
-        data: this.getInitialTreeData(nextProps.data, nextProps.value)
       });
     }
+    this.unserializeLists({
+      check: nextProps.value
+    });
   }
   /**
     * 初始化 TreeData
@@ -83,6 +91,24 @@ class CheckTree extends Component {
 
     return this.tempNode;
   }
+
+  getNodeCheckState(node, relation) {
+    const { childrenKey } = this.props;
+    if (!node[childrenKey] || !node[childrenKey].length || !relation) {
+      return node.check ? CHECK_STATE.CHECK : CHECK_STATE.UNCHECK;
+    }
+
+    if (this.isEveryChildChecked(node)) {
+      return CHECK_STATE.CHECK;
+    }
+
+    if (this.isSomeChildChecked(node)) {
+      return CHECK_STATE.HALFCHECK;
+    }
+
+    return CHECK_STATE.UNCHECK;
+  }
+
 
   getCheckState(checkedNodes, node) {
     const { childrenKey } = this.props;
@@ -136,6 +162,26 @@ class CheckTree extends Component {
     return false;
   }
 
+  getDisabledState(node) {
+    const { disabledItems, valueKey } = this.props;
+    return disabledItems.some((value) => {
+      return isEqual(this.nodes[node.refKey][valueKey], value);
+    });
+  }
+
+  getFormattedNodes(nodes) {
+    return nodes.map((node) => {
+      const formatted = { ...node };
+      formatted.check = this.nodes[node.refKey].check;
+
+      if (Array.isArray(node.children) && node.children.length > 0) {
+        formatted.children = this.getFormattedNodes(formatted.children);
+      }
+
+      return formatted;
+    });
+  }
+
   getSelectedValues = (nextData) => {
     const { valueKey, childrenKey } = this.props;
     let selectedValues = [];
@@ -155,6 +201,75 @@ class CheckTree extends Component {
     return selectedValues;
   }
 
+  /**
+   * 拍平数组，将tree 转换为一维数组
+   * @param {*} nodes tree data
+   * @param {*} ref 当前层级
+   */
+  flattenNodes(nodes, ref = 0) {
+    const { labelKey, valueKey } = this.props;
+
+    if (!Array.isArray(nodes) || nodes.length === 0) {
+      return;
+    }
+    nodes.forEach((node, index) => {
+      const refKey = `${ref}-${index}`;
+      node.refKey = refKey;
+      this.nodes[refKey] = {
+        label: node[labelKey],
+        value: node[valueKey]
+      };
+      this.flattenNodes(node.children, refKey);
+    });
+  }
+
+  unserializeLists(lists) {
+    const { valueKey } = this.props;
+    // Reset values to false
+    Object.keys(this.nodes).forEach((refKey) => {
+      Object.keys(lists).forEach((listKey) => {
+        this.nodes[refKey][listKey] = false;
+        lists[listKey].forEach((value) => {
+          if (isEqual(this.nodes[refKey][valueKey], value)) {
+            this.nodes[refKey][listKey] = true;
+          }
+        });
+      });
+    });
+    console.log(this.nodes);
+  }
+
+  serializeList(key) {
+    const { valueKey } = this.props;
+    const list = [];
+
+    Object.keys(this.nodes).forEach((refKey) => {
+      if (this.nodes[refKey][key]) {
+        list.push(this.nodes[refKey][valueKey]);
+      }
+    });
+    return list;
+  }
+
+  isEveryChildChecked(node) {
+    return node.children.every((child) => {
+      if (child.children) {
+        return this.isEveryChildChecked(child);
+      }
+
+      return child.check;
+    });
+  }
+
+  isSomeChildChecked(node) {
+    return node.children.some((child) => {
+      if (child.children) {
+        return this.isSomeChildChecked(child);
+      }
+
+      return child.check;
+    });
+  }
   /**
    * 初始化选中的状态
    */
@@ -273,31 +388,58 @@ class CheckTree extends Component {
     }
   }
 
+  toggleChecked(node, isChecked, relation) {
+    const { childrenKey } = this.props;
+    if (!node[childrenKey] || !node[childrenKey].length || !relation) {
+      this.toggleNode('check', node, isChecked);
+    } else {
+      this.toggleNode('check', node, isChecked);
+      node.children.forEach((child) => {
+        this.toggleChecked(child, isChecked);
+      });
+    }
+  }
+
+  toggleNode(key, node, toggleValue) {
+    this.nodes[node.refKey][key] = toggleValue;
+  }
+
   /**
    * 选择某个节点后的回调函数
    * @param {object} activeNodeData   节点的数据
    * @param {number} layer            节点的层级
    */
-  handleSelect = (activeNodeData, layer) => {
+  handleSelect = (activeNode, layer, event) => {
     const { valueKey, childrenKey, onChange, onSelect, relation } = this.props;
-    const nextData = this.state.data;
+    // this.toggleNode('check', activeNode, activeNode.check);
+    this.toggleChecked(activeNode, activeNode.check, relation);
+    console.log(this.nodes);
+    const selectedValues = this.serializeList('check');
+    this.setState({
+      selectedValues
+    }, () => {
+      onChange && onChange(selectedValues);
+      onSelect && onSelect(activeNode, layer, event);
+    });
 
-    if (
-      'defaultValue' in this.props ||
-      (this.isControlled && onChange)
-    ) {
-      const activeNode = this.getActiveNode(nextData, activeNodeData[valueKey]);
-      relation && this.checkChildren(activeNode[childrenKey], activeNode.checkState);
-      const selectedValues = this.getSelectedValues(nextData);
-      activeNode.check = activeNode.checkState === 'checked';
-      this.setState({
-        data: nextData,
-        selectedValues
-      }, () => {
-        onChange && onChange(selectedValues);
-        onSelect && onSelect(activeNode, layer);
-      });
-    }
+    // const nextData = this.state.data;
+
+    // if (
+    //   'defaultValue' in this.props ||
+    //   (this.isControlled && onChange)
+    // ) {
+    //   const activeNode = this.getActiveNode(nextData, activeNodeData[valueKey]);
+    //   relation && this.checkChildren(activeNode[childrenKey], activeNode.checkState);
+    //   const selectedValues = this.getSelectedValues(nextData);
+    //   activeNode.check = activeNode.checkState === 'checked';
+    //   this.setState({
+    //     data: nextData,
+    //     selectedValues
+    //   }, () => {
+    //     onChange && onChange(selectedValues);
+    //     onSelect && onSelect(activeNode, layer);
+    //   });
+    // }
   }
 
   handleToggle = (nodeData, layer) => {
@@ -311,17 +453,101 @@ class CheckTree extends Component {
     });
   }
 
-  render() {
-    const { onChange, ...props } = this.props;
+  renderNode(node, index, layer) {
+    const {
+          defaultExpandAll,
+      valueKey,
+      labelKey,
+      childrenKey,
+      renderTreeNode,
+      renderTreeIcon,
+      relation
+        } = this.props;
+
+    const key = `${node.refKey}`;
+    const checkState = this.getNodeCheckState(node, relation);
+    this.toggleNode('check', node, node.check);
+    const children = node[childrenKey];
+    const disabled = this.getDisabledState(node);
+    const hasNotEmptyChildren = children && Array.isArray(children) && children.length > 0;
+
+    const props = {
+      value: node[valueKey],
+      label: node[labelKey],
+      nodeData: node,
+      onTreeToggle: this.handleTreeToggle,
+      onRenderTreeNode: renderTreeNode,
+      onRenderTreeIcon: renderTreeIcon,
+      onSelect: this.handleSelect,
+      onKeyDown: this.handleKeyDown,
+      // active: this.state.activeNode === value,
+      hasChildren: !!children,
+      disabled,
+      children,
+      index,
+      layer,
+      checkState,
+      defaultExpandAll
+    };
+
+    if (props.hasChildren) {
+      layer += 1;
+
+      // 是否展开树节点且子节点不为空
+      let childrenClasses = classNames('node-children', {
+        open: defaultExpandAll && hasNotEmptyChildren
+      });
+
+      let nodes = children || [];
+      return (
+        <InternalNode
+          className={childrenClasses}
+          key={key}
+          ref={key}
+          multiple={true}
+          {...props}
+        >
+          {nodes.map((child, i) => this.renderNode(child, i, layer, node))}
+        </InternalNode>
+      );
+    }
+
     return (
-      <Tree
+      <TreeCheckNode
+        key={key}
+        ref={key}
         {...props}
-        multiple
-        data={this.state.data}
-        defaultExpandAll={this.state.defaultExpandAll}
-        onChange={this.handleSelect}
-        onExpand={this.handleToggle}
       />
+    );
+  }
+
+  render() {
+    const { onScroll } = this.props;
+    // 树节点的层级
+    let layer = 0;
+
+    const { data = [], className, height } = this.props;
+    const classes = classNames('tree-view', className, {
+      checktree: true
+    });
+    const nodes = this.getFormattedNodes(data).map((node, index) => {
+      return this.renderNode(node, index, layer);
+    });
+    const styles = {
+      height
+    };
+
+    return (
+      <div
+        ref={(ref) => {
+          this.treeView = ref;
+        }}
+        className={classes}
+        style={styles}
+        onScroll={onScroll}
+      >
+        {nodes}
+      </div>
     );
   }
 }
