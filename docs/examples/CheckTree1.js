@@ -14,10 +14,11 @@ const CheckTree1 = props => (
       onExpand={(activeNode, layer) => {
         console.log(activeNode, layer);
       }}
-      onSelect={(activeNode, layer) => {
+      onChange={(values) => {
+        console.log(values);
       }}
       onScroll={(e) => {
-        console.log(e.target);
+        // console.log(e.target);
       }}
     />
   </div>

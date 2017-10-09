@@ -9,7 +9,6 @@ import TreeCheckNode from './TreeCheckNode';
 import InternalNode from './InternalNode';
 import { CHECK_STATE } from './constants';
 
-
 const propTypes = {
   height: PropTypes.number,
   data: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
@@ -115,12 +114,12 @@ class CheckTree extends Component {
     return false;
   }
 
-  getActiveElementOption(options, value) {
+  getActiveElementOption(options, refKey) {
     for (let i = 0; i < options.length; i += 1) {
-      if (options[i].refKey === value) {
+      if (options[i].refKey === refKey) {
         return options[i];
       } else if (options[i].children && options[i].children.length) {
-        let active = this.getActiveElementOption(options[i].children, value);
+        let active = this.getActiveElementOption(options[i].children, refKey);
         if (active) {
           return active;
         }
@@ -344,6 +343,23 @@ class CheckTree extends Component {
     this.handleSelect(nodeData, +layer, event);
   }
 
+  setCheckState() {
+    const { relation } = this.props;
+    Object.keys(this.nodes).forEach((refKey) => {
+      let node = this.nodes[refKey];
+      node.refKey = refKey;
+      const checkState = this.getNodeCheckState(node, relation);
+      let isChecked = false;
+      if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
+        isChecked = false;
+      }
+      if (checkState === CHECK_STATE.CHECK) {
+        isChecked = true;
+      }
+      this.toggleNode('check', node, isChecked);
+    });
+  }
+
   focusNextItem() {
     const { items, activeIndex } = this.getItemsAndActiveIndex();
     if (items.length === 0) {
@@ -371,9 +387,11 @@ class CheckTree extends Component {
    */
   handleSelect = (activeNode, layer, event) => {
     const { onChange, onSelect, relation } = this.props;
-    console.log(this.nodes);
     this.toggleChecked(activeNode, activeNode.check, relation);
     const selectedValues = this.serializeList('check');
+
+    // FIXME:: this.nodes 取值延迟，导致 selectedValues 值错误
+    console.log(selectedValues);
     this.setState({
       selectedValues
     }, () => {
@@ -432,7 +450,14 @@ class CheckTree extends Component {
 
     const key = `${node.refKey}`;
     const checkState = this.getNodeCheckState(node, relation);
-    // this.toggleNode('check', node, node.check);
+    // let isChecked = false;
+    // if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
+    //   isChecked = false;
+    // }
+    // if (checkState === CHECK_STATE.CHECK) {
+    //   isChecked = true;
+    // }
+    // this.toggleNode('check', node, isChecked);
     const children = node[childrenKey];
     const disabled = this.getDisabledState(node);
     const hasNotEmptyChildren = children && Array.isArray(children) && children.length > 0;
