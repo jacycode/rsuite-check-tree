@@ -7,7 +7,6 @@ import classNames from 'classnames';
 import { toggleClass, addClass, hasClass } from 'dom-lib';
 import TreeCheckNode from './TreeCheckNode';
 import InternalNode from './InternalNode';
-import Tree from './Tree';
 import { CHECK_STATE } from './constants';
 
 
@@ -74,23 +73,6 @@ class CheckTree extends Component {
       check: nextProps.value
     });
   }
-  /**
-    * 初始化 TreeData
-    */
-  getInitialTreeData(data, value) {
-    const { relation } = this.props;
-    this.tempNode = cloneDeep(data || this.props.data);
-
-    if (relation) {
-      this.createParentNode(value);
-      const leafNodes = this.initChildrenNodeCheckState();
-      this.initParentNodeCheckState(leafNodes);
-    } else {
-      this.initCheckedState(value);
-    }
-
-    return this.tempNode;
-  }
 
   getNodeCheckState(node, relation) {
     const { childrenKey } = this.props;
@@ -133,6 +115,72 @@ class CheckTree extends Component {
     return false;
   }
 
+  getActiveElementOption(options, value) {
+    for (let i = 0; i < options.length; i += 1) {
+      if (options[i].refKey === value) {
+        return options[i];
+      } else if (options[i].children && options[i].children.length) {
+        let active = this.getActiveElementOption(options[i].children, value);
+        if (active) {
+          return active;
+        }
+      }
+    }
+    return false;
+  }
+
+  getFocusableMenuItems = () => {
+    const { data, childrenKey } = this.props;
+
+    let items = [];
+    const loop = (treeNodes) => {
+      treeNodes.forEach((node) => {
+        if (!this.getDisabledState(node)) {
+          items.push(node);
+          const nodeData = { ...node, ...this.nodes[node.refKey] };
+          if (!this.getExpandState(nodeData)) {
+            return;
+          }
+          if (node[childrenKey]) {
+            loop(node[childrenKey]);
+          }
+        }
+      });
+    };
+
+    loop(data);
+    return items;
+  }
+
+  getItemsAndActiveIndex() {
+    const items = this.getFocusableMenuItems();
+
+    let activeIndex = 0;
+    items.forEach((item, index) => {
+      if (item.refKey === document.activeElement.getAttribute('data-key')) {
+        activeIndex = index;
+      }
+    });
+    return { items, activeIndex };
+  }
+
+  getActiveItem() {
+    const { data } = this.props;
+    const activeItem = document.activeElement;
+    const { key, layer } = activeItem.dataset;
+    const nodeData = this.getActiveElementOption(data, key);
+    nodeData.check = !this.nodes[nodeData.refKey].check;
+    return {
+      nodeData,
+      layer
+    };
+  }
+
+  getElementByDataKey = (dataKey) => {
+    const ele = findDOMNode(this);
+    return ele.querySelector(`[data-key="${dataKey}"]`);
+  }
+
   /**
    * 当前找到当前选中的节点
    * 同时依次查找父节点，并改变 checkState 状态: 'checked', 'halfChecked', 'unchecked'
@@ -173,7 +221,7 @@ class CheckTree extends Component {
     return nodes.map((node) => {
       const formatted = { ...node };
       formatted.check = this.nodes[node.refKey].check;
-
+      formatted.expand = this.nodes[node.refKey].expand;
       if (Array.isArray(node.children) && node.children.length > 0) {
         formatted.children = this.getFormattedNodes(formatted.children);
       }
@@ -217,7 +265,8 @@ class CheckTree extends Component {
       node.refKey = refKey;
       this.nodes[refKey] = {
         label: node[labelKey],
-        value: node[valueKey]
+        value: node[valueKey],
+        expand: this.getExpandState(node)
       };
       this.flattenNodes(node.children, refKey);
     });
@@ -236,7 +285,6 @@ class CheckTree extends Component {
         });
       });
     });
-    console.log(this.nodes);
   }
 
   serializeList(key) {
@@ -270,123 +318,6 @@ class CheckTree extends Component {
       return child.check;
     });
   }
-  /**
-   * 初始化选中的状态
-   */
-  initCheckedState = (value) => {
-    const selectedValues = value || this.state.selectedValues;
-    const { valueKey, childrenKey } = this.props;
-    let level = 0;
-    const loop = (nodes, ref) => {
-      nodes.forEach((node, index) => {
-        node.refKey = `${ref}-${index}`;
-        node.checkState = 'unchecked';
-        selectedValues.forEach((selected) => {
-          if (isEqual(selected, node[valueKey])) {
-            node.checkState = 'checked';
-          }
-        });
-        node.expand = this.getExpandState(node);
-        if (node[childrenKey]) {
-          loop(node[childrenKey], node.refKey);
-        }
-      });
-    };
-    loop(this.tempNode, level);
-  }
-
-  /**
-   * 初始化子节点的 CheckState
-   */
-  initChildrenNodeCheckState() {
-    const { valueKey, childrenKey } = this.props;
-    const leafNodes = [];
-    const loop = (nodes) => {
-      nodes.forEach((node) => {
-        if (node[childrenKey]) {
-          if (isEqual(node, node[valueKey]) || node.checkState === 'checked') {
-            node[childrenKey].map((v) => {
-              v.checkState = 'checked';
-            });
-          }
-          loop(node[childrenKey]);
-        } else {
-          leafNodes.push(node);
-        }
-      });
-    };
-    loop(this.tempNode);
-    return leafNodes;
-  }
-
-  /**
-   * 初始化父节点的 CheckState
-   * @param {array} leafNodes  所有的叶子节点
-   */
-  initParentNodeCheckState(leafNodes) {
-    const { childrenKey } = this.props;
-    const upLoop = (leafNode) => {
-      let parentNode = leafNode.parentNode;
-      if (parentNode) {
-        let checkedNodes = parentNode[childrenKey].filter((node) => {
-          return node.checkState === 'checked' ||
-            node.checkState === 'halfChecked';
-        });
-        parentNode.checkState = this.getCheckState(checkedNodes, parentNode);
-        upLoop(parentNode);
-      }
-    };
-    for (let i = 0; i < leafNodes.length; i += 1) {
-      upLoop(leafNodes[i]);
-    }
-  }
-
-
-  /**
-  * 给所有的节点，创建一个 parentNode 属性
-  */
-  createParentNode = (value) => {
-    const selectedValues = value || this.state.selectedValues;
-    const { valueKey, childrenKey } = this.props;
-    let level = 0;
-    const loop = (nodes, parentNode, ref) => {
-      nodes.forEach((node, index) => {
-        node.refKey = `${ref}-${index}`;
-        node.expand = this.getExpandState(node);
-        node.parentNode = parentNode;
-        // 同时加上 checkState 属性
-        node.checkState = 'unchecked';
-        selectedValues.forEach((selected) => {
-          if (isEqual(selected, node[valueKey])) {
-            node.checkState = 'checked';
-          }
-        });
-        if (node[childrenKey]) {
-          loop(node[childrenKey], node, node.refKey);
-        }
-      });
-    };
-    loop(this.tempNode, null, level);
-  }
-
-  /**
-   * 递归查找子节点，
-   * 并根据 checkState 参数改变所有字节点的 checkState 状态
-   * @param {*} nodes
-   * @param {*} checkState
-   */
-  checkChildren = (nodes, checkState) => {
-    const { childrenKey } = this.props;
-    if (!nodes) {
-      return;
-    }
-    for (let i = 0; i < nodes.length; i += 1) {
-      nodes[i].checkState = checkState;
-      if (nodes[i][childrenKey]) {
-        this.checkChildren(nodes[i][childrenKey], checkState);
-      }
-    }
-  }
 
   toggleChecked(node, isChecked, relation) {
     const { childrenKey } = this.props;
@@ -395,7 +326,7 @@ class CheckTree extends Component {
     } else {
       this.toggleNode('check', node, isChecked);
       node.children.forEach((child) => {
-        this.toggleChecked(child, isChecked);
+        this.toggleChecked(child, isChecked, relation);
       });
     }
   }
@@ -404,16 +335,44 @@ class CheckTree extends Component {
     this.nodes[node.refKey][key] = toggleValue;
   }
 
+  toggleExpand(node, isExpand) {
+    this.nodes[node.refKey].expand = isExpand;
+  }
+
+  selectActiveItem = (event) => {
+    const { nodeData, layer } = this.getActiveItem();
+    this.handleSelect(nodeData, +layer, event);
+  }
+
+  focusNextItem() {
+    const { items, activeIndex } = this.getItemsAndActiveIndex();
+    if (items.length === 0) {
+      return;
+    }
+    const nextIndex = activeIndex === items.length - 1 ? 0 : activeIndex + 1;
+    this.getElementByDataKey(items[nextIndex].refKey).focus();
+  }
+
+  focusPreviousItem() {
+    const { items, activeIndex } = this.getItemsAndActiveIndex();
+
+    if (items.length === 0) {
+      return;
+    }
+
+    const prevIndex = activeIndex === 0 ? items.length - 1 : activeIndex - 1;
+    this.getElementByDataKey(items[prevIndex].refKey).focus();
+  }
+
   /**
    * 选择某个节点后的回调函数
    * @param {object} activeNodeData   节点的数据
    * @param {number} layer            节点的层级
    */
   handleSelect = (activeNode, layer, event) => {
-    const { valueKey, childrenKey, onChange, onSelect, relation } = this.props;
-    // this.toggleNode('check', activeNode, activeNode.check);
-    this.toggleChecked(activeNode, activeNode.check, relation);
+    const { onChange, onSelect, relation } = this.props;
     console.log(this.nodes);
+    this.toggleChecked(activeNode, activeNode.check, relation);
     const selectedValues = this.serializeList('check');
     this.setState({
       selectedValues
@@ -421,41 +380,48 @@ class CheckTree extends Component {
       onChange && onChange(selectedValues);
       onSelect && onSelect(activeNode, layer, event);
     });
-
-    // const nextData = this.state.data;
-
-    // if (
-    //   'defaultValue' in this.props ||
-    //   (this.isControlled && onChange)
-    // ) {
-    //   const activeNode = this.getActiveNode(nextData, activeNodeData[valueKey]);
-    //   relation && this.checkChildren(activeNode[childrenKey], activeNode.checkState);
-    //   const selectedValues = this.getSelectedValues(nextData);
-    //   activeNode.check = activeNode.checkState === 'checked';
-    //   this.setState({
-    //     data: nextData,
-    //     selectedValues
-    //   }, () => {
-    //     onChange && onChange(selectedValues);
-    //     onSelect && onSelect(activeNode, layer);
-    //   });
-    // }
   }
 
+  /**
+   * 展开、收起节点
+   */
   handleToggle = (nodeData, layer) => {
     const { onExpand } = this.props;
-    nodeData.check = nodeData.checkState === 'checked';
-    const nextData = this.state.data;
-    this.setState({
-      data: nextData,
-    }, () => {
-      onExpand && onExpand(nodeData, layer);
-    });
+    toggleClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
+    nodeData.expand = hasClass(findDOMNode(this.refs[nodeData.refKey]), 'open');
+    this.toggleExpand(nodeData, nodeData.expand);
+    onExpand && onExpand(nodeData, layer);
+  }
+
+  /**
+   * 处理键盘方向键移动
+   */
+  handleKeyDown = (event) => {
+    switch (event.keyCode) {
+      // down
+      case 40:
+        this.focusNextItem();
+        event.preventDefault();
+        break;
+      // up
+      case 38:
+        this.focusPreviousItem();
+        event.preventDefault();
+        break;
+      // enter
+      case 13:
+        this.selectActiveItem(event);
+        event.preventDefault();
+        break;
+      default:
+    }
+
+    event.preventDefault();
   }
 
   renderNode(node, index, layer) {
     const {
-          defaultExpandAll,
+      defaultExpandAll,
       valueKey,
       labelKey,
       childrenKey,
@@ -466,7 +432,7 @@ class CheckTree extends Component {
 
     const key = `${node.refKey}`;
     const checkState = this.getNodeCheckState(node, relation);
-    this.toggleNode('check', node, node.check);
+    // this.toggleNode('check', node, node.check);
     const children = node[childrenKey];
     const disabled = this.getDisabledState(node);
     const hasNotEmptyChildren = children && Array.isArray(children) && children.length > 0;
@@ -475,7 +441,7 @@ class CheckTree extends Component {
       value: node[valueKey],
       label: node[labelKey],
       nodeData: node,
-      onTreeToggle: this.handleTreeToggle,
+      onTreeToggle: this.handleToggle,
       onRenderTreeNode: renderTreeNode,
       onRenderTreeIcon: renderTreeIcon,
       onSelect: this.handleSelect,
@@ -504,7 +470,7 @@ class CheckTree extends Component {
           className={childrenClasses}
           key={key}
           ref={key}
-          multiple={true}
+          multiple
           {...props}
         >
           {nodes.map((child, i) => this.renderNode(child, i, layer, node))}
