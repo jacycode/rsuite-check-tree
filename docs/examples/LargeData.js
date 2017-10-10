@@ -52,7 +52,7 @@ class LargeData extends Component {
       <div className="doc-example">
         <CheckTree
           defaultExpandAll
-          relation
+          cascade
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}

@@ -18,7 +18,7 @@ class CheckTree2 extends Component {
       <div className="doc-example">
         <CheckTree
           defaultExpandAll
-          relation={false}
+          cascade={false}
           data={treeData}
           defaultValue={value}
           disabledItems={['disabled']}

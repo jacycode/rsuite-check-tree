@@ -29,7 +29,7 @@ class ControlledTree extends Component {
       <div className="doc-example">
         <CheckTree
           defaultExpandAll
-          relation={false}
+          cascade={false}
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}

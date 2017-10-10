@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
-import cloneDeep from 'lodash/cloneDeep';
 import { findDOMNode } from 'react-dom';
 import classNames from 'classnames';
-import { toggleClass, addClass, hasClass } from 'dom-lib';
+import { toggleClass, hasClass } from 'dom-lib';
 import TreeCheckNode from './TreeCheckNode';
 import InternalNode from './InternalNode';
 import { CHECK_STATE } from './constants';
@@ -13,9 +12,9 @@ const propTypes = {
   height: PropTypes.number,
   data: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
   /**
-   * 是否关系检查
+   * 是否级联选择
    */
-  relation: PropTypes.bool,
+  cascade: PropTypes.bool,
   defaultValue: PropTypes.any,  // eslint-disable-line react/forbid-prop-types
   value: PropTypes.any,         // eslint-disable-line react/forbid-prop-types
   disabledItems: PropTypes.any, // eslint-disable-line react/forbid-prop-types
@@ -32,7 +31,7 @@ const propTypes = {
 };
 
 const defaultProps = {
-  relation: true,
+  cascade: true,
   valueKey: 'value',
   labelKey: 'label',
   childrenKey: 'children'
@@ -77,9 +76,9 @@ class CheckTree extends Component {
   componentDidUpdate() {
   }
 
-  getNodeCheckState(node, relation) {
+  getNodeCheckState(node, cascade) {
     const { childrenKey } = this.props;
-    if (!node[childrenKey] || !node[childrenKey].length || !relation) {
+    if (!node[childrenKey] || !node[childrenKey].length || !cascade) {
       return node.check ? CHECK_STATE.CHECK : CHECK_STATE.UNCHECK;
     }
 
@@ -191,7 +190,7 @@ class CheckTree extends Component {
    * @param {any} value
    */
   getActiveNode = (nodes, value) => {
-    const { relation, valueKey, childrenKey } = this.props;
+    const { cascade, valueKey, childrenKey } = this.props;
     for (let i = 0; i < nodes.length; i += 1) {
       if (isEqual(nodes[i][valueKey], value)) {
         nodes[i].checkState = nodes[i].checkState !== 'checked' ? 'checked' : 'unchecked';
@@ -199,7 +198,7 @@ class CheckTree extends Component {
       } else if (nodes[i][childrenKey]) {
         let activeNode = this.getActiveNode(nodes[i][childrenKey], value);
         if (activeNode) {
-          if (relation) {
+          if (cascade) {
             let checkedNodes = nodes[i][childrenKey].filter((node) => {
               return node.checkState === 'checked' ||
                 node.checkState === 'halfChecked';
@@ -322,14 +321,14 @@ class CheckTree extends Component {
     });
   }
 
-  toggleChecked(node, isChecked, relation) {
+  toggleChecked(node, isChecked, cascade) {
     const { childrenKey } = this.props;
-    if (!node[childrenKey] || !node[childrenKey].length || !relation) {
+    if (!node[childrenKey] || !node[childrenKey].length || !cascade) {
       this.toggleNode('check', node, isChecked);
     } else {
       this.toggleNode('check', node, isChecked);
       node.children.forEach((child) => {
-        this.toggleChecked(child, isChecked, relation);
+        this.toggleChecked(child, isChecked, cascade);
       });
     }
   }
@@ -348,9 +347,9 @@ class CheckTree extends Component {
   }
 
   setCheckState(nodes) {
-    const { relation } = this.props;
+    const { cascade } = this.props;
     nodes.forEach((node) => {
-      const checkState = this.getNodeCheckState(node, relation);
+      const checkState = this.getNodeCheckState(node, cascade);
       let isChecked = false;
       if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
         isChecked = false;
@@ -391,8 +390,8 @@ class CheckTree extends Component {
    * @param {number} layer            节点的层级
    */
   handleSelect = (activeNode, layer, event) => {
-    const { onChange, onSelect, relation, data } = this.props;
-    this.toggleChecked(activeNode, activeNode.check, relation);
+    const { onChange, onSelect, cascade, data } = this.props;
+    this.toggleChecked(activeNode, activeNode.check, cascade);
     const formattedNodes = this.getFormattedNodes(data);
     this.setCheckState(formattedNodes);
     const selectedValues = this.serializeList('check');
@@ -455,11 +454,11 @@ class CheckTree extends Component {
       childrenKey,
       renderTreeNode,
       renderTreeIcon,
-      relation
+      cascade
         } = this.props;
 
     const key = `${node.refKey}`;
-    const checkState = this.getNodeCheckState(node, relation);
+    const checkState = this.getNodeCheckState(node, cascade);
     let isChecked = false;
     if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
       isChecked = false;
