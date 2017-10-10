@@ -9,16 +9,16 @@ const CheckTree1 = props => (
       defaultExpandAll
       data={treeData}
       height={400}
-      defaultValue={['Dave']}
+      defaultValue={['Dave', 'tester10']}
       disabledItems={['disabled']}
       onExpand={(activeNode, layer) => {
         console.log(activeNode, layer);
       }}
-      onSelect={(activeNode, layer) => {
-        console.log(activeNode, layer);
+      onChange={(values) => {
+        console.log(values);
       }}
       onScroll={(e) => {
-        console.log(e.target);
+        // console.log(e.target);
       }}
     />
   </div>

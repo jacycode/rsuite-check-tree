@@ -28,11 +28,14 @@ class ControlledTree extends Component {
       <div className="doc-example">
         <CheckTree
           defaultExpandAll
-          relation={false}
+          cascade={false}
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}
           height={400}
+          onSelect={(activeNode, layer) => {
+            console.log(activeNode, layer);
+          }}
           onExpand={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}

@@ -1,15 +1,14 @@
-```js
 import React, { Component } from 'react';
-import _ from 'lodash';
-import CheckTree from 'rsuite-check-tree';
-import treeData from '../data/treeData';
+import CheckTree from '../../src';
 
-class ControlledTree extends Component {
+const largeData = require('../data/testData.json');
+
+class LargeData extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: treeData,
-      selectedValues: ['Dave']
+      data: largeData,
+      selectedValues: ['Dave', 'Maya']
     };
   }
 
@@ -29,11 +28,14 @@ class ControlledTree extends Component {
       <div className="doc-example">
         <CheckTree
           defaultExpandAll
-          cascade={false}
+          cascade
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}
-          height={300}
+          height={400}
+          onSelect={(activeNode, layer) => {
+            console.log(activeNode, layer);
+          }}
           onExpand={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}
@@ -44,6 +46,5 @@ class ControlledTree extends Component {
   }
 }
 
-export default ControlledTree;
+export default LargeData;
 
-```
