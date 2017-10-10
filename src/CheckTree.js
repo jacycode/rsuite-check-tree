@@ -52,6 +52,7 @@ class CheckTree extends Component {
     });
 
     this.state = {
+      formattedNodes: [],
       data: [],
       selectedValues: nextValue,
     };
@@ -71,6 +72,9 @@ class CheckTree extends Component {
     this.unserializeLists({
       check: nextProps.value
     });
+  }
+
+  componentDidUpdate() {
   }
 
   getNodeCheckState(node, relation) {
@@ -254,7 +258,7 @@ class CheckTree extends Component {
    * @param {*} ref 当前层级
    */
   flattenNodes(nodes, ref = 0) {
-    const { labelKey, valueKey } = this.props;
+    const { labelKey, valueKey, childrenKey } = this.props;
 
     if (!Array.isArray(nodes) || nodes.length === 0) {
       return;
@@ -267,7 +271,7 @@ class CheckTree extends Component {
         value: node[valueKey],
         expand: this.getExpandState(node)
       };
-      this.flattenNodes(node.children, refKey);
+      this.flattenNodes(node[childrenKey], refKey);
     });
   }
 
@@ -343,11 +347,9 @@ class CheckTree extends Component {
     this.handleSelect(nodeData, +layer, event);
   }
 
-  setCheckState() {
+  setCheckState(nodes) {
     const { relation } = this.props;
-    Object.keys(this.nodes).forEach((refKey) => {
-      let node = this.nodes[refKey];
-      node.refKey = refKey;
+    nodes.forEach((node) => {
       const checkState = this.getNodeCheckState(node, relation);
       let isChecked = false;
       if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
@@ -357,6 +359,9 @@ class CheckTree extends Component {
         isChecked = true;
       }
       this.toggleNode('check', node, isChecked);
+      if (Array.isArray(node.children) && node.children.length > 0) {
+        this.setCheckState(node.children);
+      }
     });
   }
 
@@ -386,12 +391,11 @@ class CheckTree extends Component {
    * @param {number} layer            节点的层级
    */
   handleSelect = (activeNode, layer, event) => {
-    const { onChange, onSelect, relation } = this.props;
+    const { onChange, onSelect, relation, data } = this.props;
     this.toggleChecked(activeNode, activeNode.check, relation);
+    // const formattedNodes = this.getFormattedNodes(data);
+    // this.setCheckState(formattedNodes);
     const selectedValues = this.serializeList('check');
-
-    // FIXME:: this.nodes 取值延迟，导致 selectedValues 值错误
-    console.log(selectedValues);
     this.setState({
       selectedValues
     }, () => {
@@ -450,13 +454,13 @@ class CheckTree extends Component {
 
     const key = `${node.refKey}`;
     const checkState = this.getNodeCheckState(node, relation);
-    // let isChecked = false;
-    // if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
-    //   isChecked = false;
-    // }
-    // if (checkState === CHECK_STATE.CHECK) {
-    //   isChecked = true;
-    // }
+    let isChecked = false;
+    if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
+      isChecked = false;
+    }
+    if (checkState === CHECK_STATE.CHECK) {
+      isChecked = true;
+    }
     // this.toggleNode('check', node, isChecked);
     const children = node[childrenKey];
     const disabled = this.getDisabledState(node);
@@ -516,12 +520,14 @@ class CheckTree extends Component {
     const { onScroll } = this.props;
     // 树节点的层级
     let layer = 0;
-
     const { data = [], className, height } = this.props;
     const classes = classNames('tree-view', className, {
       checktree: true
     });
-    const nodes = this.getFormattedNodes(data).map((node, index) => {
+
+    const formattedNodes = this.state.formattedNodes.length ?
+      this.state.formattedNodes : this.getFormattedNodes(data);
+    const nodes = formattedNodes.map((node, index) => {
       return this.renderNode(node, index, layer);
     });
     const styles = {
