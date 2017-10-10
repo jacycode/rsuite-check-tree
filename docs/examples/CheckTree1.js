@@ -10,7 +10,6 @@ const CheckTree1 = props => (
       data={treeData}
       height={400}
       defaultValue={['Dave', 'tester10']}
-      disabledItems={['disabled']}
       onExpand={(activeNode, layer) => {
         console.log(activeNode, layer);
       }}

@@ -34,7 +34,8 @@ const defaultProps = {
   cascade: true,
   valueKey: 'value',
   labelKey: 'label',
-  childrenKey: 'children'
+  childrenKey: 'children',
+  disabledItems: [],
 };
 
 class CheckTree extends Component {
