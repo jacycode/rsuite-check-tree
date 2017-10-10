@@ -393,10 +393,11 @@ class CheckTree extends Component {
   handleSelect = (activeNode, layer, event) => {
     const { onChange, onSelect, relation, data } = this.props;
     this.toggleChecked(activeNode, activeNode.check, relation);
-    // const formattedNodes = this.getFormattedNodes(data);
-    // this.setCheckState(formattedNodes);
+    const formattedNodes = this.getFormattedNodes(data);
+    this.setCheckState(formattedNodes);
     const selectedValues = this.serializeList('check');
     this.setState({
+      formattedNodes,
       selectedValues
     }, () => {
       onChange && onChange(selectedValues);
