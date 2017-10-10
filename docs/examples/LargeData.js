@@ -2,31 +2,6 @@ import React, { Component } from 'react';
 import CheckTree from '../../src';
 
 const largeData = require('../data/testData.json');
-const parents = [];
-
-for (let i = 0; i < 2; i += 1) {
-  const children = [];
-
-  for (let j = 0; j < 200; j += 1) {
-    children.push({
-      value: `node-0-${i}-${j}`,
-      label: `Node 0-${i}-${j}`,
-    });
-  }
-
-  parents.push({
-    value: `node-0-${i}`,
-    label: `Node 0-${i}`,
-    children,
-  });
-}
-
-const nodes = [{
-  value: 'node-0',
-  label: 'Node 0',
-  children: parents,
-}];
-
 
 class LargeData extends Component {
   constructor(props) {
