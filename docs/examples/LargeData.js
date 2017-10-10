@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import CheckTree from '../../src';
 
+const largeData = require('../data/testData.json');
 const parents = [];
 
 for (let i = 0; i < 2; i += 1) {
@@ -31,7 +32,7 @@ class LargeData extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: nodes,
+      data: largeData,
       selectedValues: ['Dave', 'Maya']
     };
   }
