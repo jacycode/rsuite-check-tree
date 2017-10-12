@@ -252,6 +252,24 @@ class CheckTree extends Component {
     return selectedValues;
   }
 
+  setCheckState(nodes) {
+    const { cascade } = this.props;
+    nodes.forEach((node) => {
+      const checkState = this.getNodeCheckState(node, cascade);
+      let isChecked = false;
+      if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
+        isChecked = false;
+      }
+      if (checkState === CHECK_STATE.CHECK) {
+        isChecked = true;
+      }
+      this.toggleNode('check', node, isChecked);
+      if (Array.isArray(node.children) && node.children.length > 0) {
+        this.setCheckState(node.children);
+      }
+    });
+  }
+
   /**
    * 拍平数组，将tree 转换为一维数组
    * @param {*} nodes tree data
@@ -345,24 +363,6 @@ class CheckTree extends Component {
   selectActiveItem = (event) => {
     const { nodeData, layer } = this.getActiveItem();
     this.handleSelect(nodeData, +layer, event);
-  }
-
-  setCheckState(nodes) {
-    const { cascade } = this.props;
-    nodes.forEach((node) => {
-      const checkState = this.getNodeCheckState(node, cascade);
-      let isChecked = false;
-      if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
-        isChecked = false;
-      }
-      if (checkState === CHECK_STATE.CHECK) {
-        isChecked = true;
-      }
-      this.toggleNode('check', node, isChecked);
-      if (Array.isArray(node.children) && node.children.length > 0) {
-        this.setCheckState(node.children);
-      }
-    });
   }
 
   focusNextItem() {
@@ -460,14 +460,6 @@ class CheckTree extends Component {
 
     const key = `${node.refKey}`;
     const checkState = this.getNodeCheckState(node, cascade);
-    let isChecked = false;
-    if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
-      isChecked = false;
-    }
-    if (checkState === CHECK_STATE.CHECK) {
-      isChecked = true;
-    }
-    // this.toggleNode('check', node, isChecked);
     const children = node[childrenKey];
     const disabled = this.getDisabledState(node);
     const hasNotEmptyChildren = children && Array.isArray(children) && children.length > 0;
