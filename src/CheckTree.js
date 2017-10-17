@@ -541,7 +541,9 @@ class CheckTree extends Component {
         style={styles}
         onScroll={onScroll}
       >
-        {nodes}
+        <div className="tree-nodes">
+          {nodes}
+        </div>
       </div>
     );
   }
