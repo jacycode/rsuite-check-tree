@@ -9,7 +9,7 @@ const CheckTree1 = props => (
       defaultExpandAll
       data={treeData}
       height={400}
-      defaultValue={['Dave', 'tester10']}
+      defaultValue={['Dave', 'Maya']}
       onExpand={(activeNode, layer) => {
         console.log(activeNode, layer);
       }}

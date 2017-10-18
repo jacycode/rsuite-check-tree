@@ -42,7 +42,6 @@ class CheckTree extends Component {
   constructor(props) {
     super(props);
     this.nodes = {};
-    this.tempNode = null;
     this.isControlled = 'value' in props;
     const nextValue = props.value || props.defaultValue || [];
 
@@ -92,17 +91,6 @@ class CheckTree extends Component {
     }
 
     return CHECK_STATE.UNCHECK;
-  }
-
-
-  getCheckState(checkedNodes, node) {
-    const { childrenKey } = this.props;
-    if (checkedNodes.length === node[childrenKey].length) {
-      return 'checked';
-    } else if (checkedNodes.length > 0) {
-      return 'halfChecked';
-    }
-    return 'unchecked';
   }
 
   getExpandState(node) {
@@ -291,21 +279,29 @@ class CheckTree extends Component {
       };
       this.flattenNodes(node[childrenKey], refKey);
     });
+    console.log(this.nodes);
   }
 
   unserializeLists(lists) {
-    const { valueKey } = this.props;
+    const { valueKey, cascade } = this.props;
+    let selectKey = '';
     // Reset values to false
     Object.keys(this.nodes).forEach((refKey) => {
       Object.keys(lists).forEach((listKey) => {
         this.nodes[refKey][listKey] = false;
+        if (selectKey && cascade && refKey.indexOf(selectKey) >= 0) {
+          this.nodes[refKey][listKey] = true;
+        }
         lists[listKey].forEach((value) => {
           if (isEqual(this.nodes[refKey][valueKey], value)) {
+            selectKey = refKey;
             this.nodes[refKey][listKey] = true;
           }
         });
       });
     });
+
+    console.log(this.nodes);
   }
 
   serializeList(key) {
