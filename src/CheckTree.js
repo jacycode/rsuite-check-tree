@@ -279,7 +279,6 @@ class CheckTree extends Component {
       };
       this.flattenNodes(node[childrenKey], refKey);
     });
-    console.log(this.nodes);
   }
 
   unserializeLists(lists) {
@@ -301,7 +300,6 @@ class CheckTree extends Component {
       });
     });
 
-    console.log(this.nodes);
   }
 
   serializeList(key) {
