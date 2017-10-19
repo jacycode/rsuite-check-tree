@@ -246,7 +246,7 @@ class CheckTree extends Component {
   }
 
   unserializeLists(lists) {
-    const { valueKey} = this.props;
+    const { valueKey } = this.props;
     // Reset values to false
     Object.keys(this.nodes).forEach((refKey) => {
       Object.keys(lists).forEach((listKey) => {
