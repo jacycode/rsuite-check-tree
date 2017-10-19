@@ -19,6 +19,9 @@ const CheckTree1 = props => (
       onScroll={(e) => {
         // console.log(e.target);
       }}
+      didMount={(values) => {
+        console.log(values);
+      }}
     />
   </div>
 );

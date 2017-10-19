@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
+import isUndefined from 'lodash/isUndefined';
 import { findDOMNode } from 'react-dom';
 import classNames from 'classnames';
 import { toggleClass, hasClass } from 'dom-lib';
@@ -27,7 +28,8 @@ const propTypes = {
   onSelect: PropTypes.func,
   onScroll: PropTypes.func,
   renderTreeNode: PropTypes.func,
-  renderTreeIcon: PropTypes.func
+  renderTreeIcon: PropTypes.func,
+  didMount: PropTypes.func,
 };
 
 const defaultProps = {
@@ -57,6 +59,12 @@ class CheckTree extends Component {
     };
   }
 
+  componentDidMount() {
+    const { didMount } = this.props;
+    const selectedValues = this.serializeList('check');
+
+    didMount && didMount(selectedValues);
+  }
 
   componentWillReceiveProps(nextProps) {
     if (!isEqual(this.props.data, nextProps.data)) {
@@ -71,9 +79,6 @@ class CheckTree extends Component {
     this.unserializeLists({
       check: nextProps.value
     });
-  }
-
-  componentDidUpdate() {
   }
 
   getNodeCheckState(node, cascade) {
@@ -172,35 +177,6 @@ class CheckTree extends Component {
     return ele.querySelector(`[data-key="${dataKey}"]`);
   }
 
-  /**
-   * 当前找到当前选中的节点
-   * 同时依次查找父节点，并改变 checkState 状态: 'checked', 'halfChecked', 'unchecked'
-   * @param {array} nodes
-   * @param {any} value
-   */
-  getActiveNode = (nodes, value) => {
-    const { cascade, valueKey, childrenKey } = this.props;
-    for (let i = 0; i < nodes.length; i += 1) {
-      if (isEqual(nodes[i][valueKey], value)) {
-        nodes[i].checkState = nodes[i].checkState !== 'checked' ? 'checked' : 'unchecked';
-        return nodes[i];
-      } else if (nodes[i][childrenKey]) {
-        let activeNode = this.getActiveNode(nodes[i][childrenKey], value);
-        if (activeNode) {
-          if (cascade) {
-            let checkedNodes = nodes[i][childrenKey].filter((node) => {
-              return node.checkState === 'checked' ||
-                node.checkState === 'halfChecked';
-            });
-            nodes[i].checkState = this.getCheckState(checkedNodes, nodes[i]);
-          }
-          return activeNode;
-        }
-      }
-    }
-    return false;
-  }
-
   getDisabledState(node) {
     const { disabledItems, valueKey } = this.props;
     return disabledItems.some((value) => {
@@ -208,37 +184,25 @@ class CheckTree extends Component {
     });
   }
 
-  getFormattedNodes(nodes) {
+  getFormattedNodes(nodes, parentCheckState) {
+    const { cascade } = this.props;
     return nodes.map((node) => {
       const formatted = { ...node };
-      formatted.check = this.nodes[node.refKey].check;
+      if (cascade && !isUndefined(parentCheckState) && parentCheckState) {
+        formatted.check = parentCheckState;
+        this.nodes[node.refKey].check = parentCheckState;
+      } else {
+        formatted.check = this.nodes[node.refKey].check;
+      }
       formatted.expand = this.nodes[node.refKey].expand;
       if (Array.isArray(node.children) && node.children.length > 0) {
-        formatted.children = this.getFormattedNodes(formatted.children);
+        formatted.children = this.getFormattedNodes(formatted.children, formatted.check);
       }
 
       return formatted;
     });
   }
 
-  getSelectedValues = (nextData) => {
-    const { valueKey, childrenKey } = this.props;
-    let selectedValues = [];
-
-    const loop = (nodes) => {
-      nodes.forEach((node) => {
-        if (node.checkState === 'checked') {
-          selectedValues.push(node[valueKey]);
-        }
-        if (node[childrenKey]) {
-          loop(node[childrenKey]);
-        }
-      });
-    };
-    loop(nextData);
-
-    return selectedValues;
-  }
 
   setCheckState(nodes) {
     const { cascade } = this.props;
@@ -282,18 +246,13 @@ class CheckTree extends Component {
   }
 
   unserializeLists(lists) {
-    const { valueKey, cascade } = this.props;
-    let selectKey = '';
+    const { valueKey} = this.props;
     // Reset values to false
     Object.keys(this.nodes).forEach((refKey) => {
       Object.keys(lists).forEach((listKey) => {
         this.nodes[refKey][listKey] = false;
-        if (selectKey && cascade && refKey.indexOf(selectKey) >= 0) {
-          this.nodes[refKey][listKey] = true;
-        }
         lists[listKey].forEach((value) => {
           if (isEqual(this.nodes[refKey][valueKey], value)) {
-            selectKey = refKey;
             this.nodes[refKey][listKey] = true;
           }
         });

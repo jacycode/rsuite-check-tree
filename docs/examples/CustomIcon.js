@@ -41,7 +41,7 @@ class CheckTree2 extends Component {
   handleOnChange = (values) => {
     this.setState((preveState) => {
       return {
-        selectedValues: [...preveState.selectedValues, ...values]
+        selectedValues: values
       };
     });
   }
