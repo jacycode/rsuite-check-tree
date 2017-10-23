@@ -16,6 +16,9 @@ const CheckTree1 = props => (
       onChange={(values) => {
         console.log(values);
       }}
+      onSelect={(activeNode, layer, values) => {
+        console.log(values);
+      }}
       onScroll={(e) => {
         // console.log(e.target);
       }}

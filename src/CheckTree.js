@@ -351,7 +351,7 @@ class CheckTree extends Component {
     const selectedValues = this.serializeList('check');
     if (this.isControlled) {
       onChange && onChange(selectedValues);
-      onSelect && onSelect(activeNode, layer, event);
+      onSelect && onSelect(activeNode, layer, selectedValues);
     } else {
       this.setState({
         formattedNodes,
