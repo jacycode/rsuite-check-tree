@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
-import isUndefined from 'lodash/isUndefined';
 import { findDOMNode } from 'react-dom';
 import classNames from 'classnames';
 import { toggleClass, hasClass } from 'dom-lib';
@@ -184,16 +183,10 @@ class CheckTree extends Component {
     });
   }
 
-  getFormattedNodes(nodes, parentCheckState) {
-    const { cascade } = this.props;
+  getFormattedNodes(nodes) {
     return nodes.map((node) => {
       const formatted = { ...node };
-      if (cascade && !isUndefined(parentCheckState) && parentCheckState) {
-        formatted.check = parentCheckState;
-        this.nodes[node.refKey].check = parentCheckState;
-      } else {
-        formatted.check = this.nodes[node.refKey].check;
-      }
+      formatted.check = this.nodes[node.refKey].check;
       formatted.expand = this.nodes[node.refKey].expand;
       if (Array.isArray(node.children) && node.children.length > 0) {
         formatted.children = this.getFormattedNodes(formatted.children, formatted.check);
@@ -222,12 +215,21 @@ class CheckTree extends Component {
     });
   }
 
+  setChildCheckState(parentNode) {
+    Object.keys(this.nodes).forEach((refKey) => {
+      const node = this.nodes[refKey];
+      if ('parentNode' in node && isEqual(node.parentNode.value, parentNode.value)) {
+        this.nodes[refKey].check = true;
+      }
+    });
+  }
+
   /**
    * 拍平数组，将tree 转换为一维数组
    * @param {*} nodes tree data
    * @param {*} ref 当前层级
    */
-  flattenNodes(nodes, ref = 0) {
+  flattenNodes(nodes, ref = 0, parentNode) {
     const { labelKey, valueKey, childrenKey } = this.props;
 
     if (!Array.isArray(nodes) || nodes.length === 0) {
@@ -241,16 +243,24 @@ class CheckTree extends Component {
         value: node[valueKey],
         expand: this.getExpandState(node)
       };
-      this.flattenNodes(node[childrenKey], refKey);
+      if (parentNode) {
+        this.nodes[refKey].parentNode = parentNode;
+      }
+      this.flattenNodes(node[childrenKey], refKey, this.nodes[refKey]);
     });
   }
 
   unserializeLists(lists) {
-    const { valueKey } = this.props;
+    const { valueKey, cascade } = this.props;
     // Reset values to false
     Object.keys(this.nodes).forEach((refKey) => {
       Object.keys(lists).forEach((listKey) => {
-        this.nodes[refKey][listKey] = false;
+        const node = this.nodes[refKey];
+        if (cascade && 'parentNode' in node) {
+          node[listKey] = node.parentNode[listKey];
+        } else {
+          node[listKey] = false;
+        }
         lists[listKey].forEach((value) => {
           if (isEqual(this.nodes[refKey][valueKey], value)) {
             this.nodes[refKey][listKey] = true;
@@ -258,7 +268,6 @@ class CheckTree extends Component {
         });
       });
     });
-
   }
 
   serializeList(key) {
@@ -343,12 +352,17 @@ class CheckTree extends Component {
    * @param {object} activeNodeData   节点的数据
    * @param {number} layer            节点的层级
    */
-  handleSelect = (activeNode, layer, event) => {
+  handleSelect = (activeNode, layer) => {
     const { onChange, onSelect, cascade, data } = this.props;
     this.toggleChecked(activeNode, activeNode.check, cascade);
     const formattedNodes = this.getFormattedNodes(data);
-    this.setCheckState(formattedNodes);
+
+    if (cascade) {
+      this.setCheckState(formattedNodes);
+    }
+
     const selectedValues = this.serializeList('check');
+
     if (this.isControlled) {
       onChange && onChange(selectedValues);
       onSelect && onSelect(activeNode, layer, selectedValues);
@@ -468,7 +482,7 @@ class CheckTree extends Component {
   }
 
   render() {
-    const { onScroll } = this.props;
+    const { onScroll, cascade } = this.props;
     // 树节点的层级
     let layer = 0;
     const { data = [], className, height } = this.props;
@@ -478,6 +492,11 @@ class CheckTree extends Component {
 
     const formattedNodes = this.state.formattedNodes.length ?
       this.state.formattedNodes : this.getFormattedNodes(data);
+
+    if (cascade) {
+      this.setCheckState(formattedNodes);
+    }
+
     const nodes = formattedNodes.map((node, index) => {
       return this.renderNode(node, index, layer);
     });
