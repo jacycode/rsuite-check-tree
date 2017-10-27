@@ -3,25 +3,34 @@ import { shallow, render, mount } from 'enzyme';
 import CheckTree from '../src/index';
 import treeData from '../docs/data/treeData';
 
-const delay = timeout => new Promise(resolve => setTimeout(resolve, timeout));
+// const delay = timeout => new Promise(resolve => setTimeout(resolve, timeout));
 
 const setup = () => {
-  const mockExpand = (activeNode) => {
+  const state = {
+    activeNode: {}
   };
-  const state = {};
+  const mockFn = {
+    onExpand: (activeNode) => {
+      // state.activeNode = activeNode;
+      return activeNode;
+    }
+  };
+
   const props = {
     defaultExpandAll: true,
     cascade: false,
     data: treeData,
     height: 400,
     defaultValue: ['Dave', 'Maya'],
-    onExpand: mockExpand
+    onExpand: mockFn.onExpand
   };
 
   const wrapper = shallow(<CheckTree {...props} />);
   const staticRender = render(<CheckTree {...props} />);
   const fullRender = mount(<CheckTree {...props} />);
   return {
+    mockFn,
+    state,
     wrapper,
     staticRender,
     fullRender
@@ -30,7 +39,6 @@ const setup = () => {
 
 describe('ChectTree test suite', () => {
   const { wrapper, staticRender, fullRender } = setup();
-
   /**
    * test tree render
    */
@@ -43,7 +51,7 @@ describe('ChectTree test suite', () => {
     expect(staticRender.find('.tree-node.checked').length).toBe(2);
   });
 
-  // test select node
+  // test select node`
   it('test toggle click Dave node', () => {
     fullRender.find('div[data-key="0-0-1-0"]').simulate('click');
     expect(fullRender.find('.tree-node.checked').length).toBe(1);
@@ -52,13 +60,36 @@ describe('ChectTree test suite', () => {
     expect(fullRender.find('.tree-node.checked').length).toBe(2);
   });
 
-  // test expand node TODO:
-  it('expand node', async () => {
-    expect(staticRender.find('.open > div[data-key="0-0-1-1"]').length).toBe(1);
+  // test expand node
+  it('test expand node', async () => {
+    expect(fullRender.exists('.open > div[data-key="0-0-1-1"]')).toBe(true);
+
     fullRender.find('div[data-key="0-0-1-1"] > .expand-icon-wrapper > .expand-icon').simulate('click');
-    await delay(4000);
-    // fullRender.find('div[data-key="0-0-1-1"] > .expand-icon-wrapper > .expand-icon').simulate('click');
-    // expect(staticRender.find('.open > div[data-key="0-0-1-1"]').length).toBe(0);
-    console.log(staticRender.find('.open > div[data-key="0-0-1-1"]').length);
+    expect(fullRender.find('.tree-view').render().find('.open > div[data-key="0-0-1-1"]').length).toBe(0);
+
+    fullRender.find('div[data-key="0-0-1-1"] > .expand-icon-wrapper > .expand-icon').simulate('click');
+    expect(fullRender.find('.tree-view').render().find('.open > div[data-key="0-0-1-1"]').length).toBe(1);
+  });
+
+  // test keyup event
+  it('keyup shoule be work', () => {
+    fullRender.find('div[data-key="0-0-1-1"]').simulate('click');
+    expect(fullRender.find('div[data-key="0-0-1-1"]').node === document.activeElement);
+
+    fullRender.find('div[data-key="0-0-1-1"]').simulate('keyup');
+    expect(fullRender.find('div[data-key="0-0-1-0"]').node === document.activeElement);
+  });
+
+  // test keydown event
+  it('keydown shoule be work', () => {
+    fullRender.find('div[data-key="0-0-1-1"]').simulate('click');
+    expect(fullRender.find('div[data-key="0-0-1-1"]').node === document.activeElement);
+
+    fullRender.find('div[data-key="0-0-1-1"]').simulate('keydown');
+    expect(fullRender.find('div[data-key="0-0-1-1-0"]').node === document.activeElement);
+
+
+    fullRender.find('div[data-key="0-0-1-1"] > .expand-icon-wrapper > .expand-icon').simulate('click');
+    expect(fullRender.find('div[data-key="0-0-1-2"]').node === document.activeElement);
   });
 });
