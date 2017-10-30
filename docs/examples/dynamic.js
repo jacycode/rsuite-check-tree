@@ -81,7 +81,6 @@ class Dynamic extends Component {
   }
 
   handleOnExpand = (activeNode, layer) => {
-    console.log(activeNode);
     if (activeNode.children.length === 0) {
       activeNode.expand && this.setLoading(activeNode, true);
       this.loadData(activeNode, layer)
