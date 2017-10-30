@@ -72,24 +72,40 @@ describe('ChectTree test suite', () => {
   });
 
   // test keyup event
-  it('keyup shoule be work', () => {
+  it('key-up shoule be work', () => {
+    const mockEvent = {
+      keyCode: 38
+    };
+
     fullRender.find('div[data-key="0-0-1-1"]').simulate('click');
     expect(fullRender.find('div[data-key="0-0-1-1"]').node === document.activeElement);
 
-    fullRender.find('div[data-key="0-0-1-1"]').simulate('keyup');
+    fullRender.find('div[data-key="0-0-1-1"]').simulate('keydown', mockEvent);
     expect(fullRender.find('div[data-key="0-0-1-0"]').node === document.activeElement);
   });
 
   // test keydown event
-  it('keydown shoule be work', () => {
+  it('key-down shoule be work', () => {
+    const downEvent = {
+      keyCode: 40
+    };
+
+    const upEvent = {
+      keyCode: 38
+    };
+    const enterEvent = {
+      keyCode: 13
+    };
+
     fullRender.find('div[data-key="0-0-1-1"]').simulate('click');
     expect(fullRender.find('div[data-key="0-0-1-1"]').node === document.activeElement);
 
-    fullRender.find('div[data-key="0-0-1-1"]').simulate('keydown');
+    fullRender.find('div[data-key="0-0-1-1"]').simulate('keydown', downEvent);
     expect(fullRender.find('div[data-key="0-0-1-1-0"]').node === document.activeElement);
 
+    fullRender.find('div[data-key="0-0-1-1"]').simulate('keydown', upEvent);
+    expect(fullRender.find('div[data-key="0-0-1-1"]').node === document.activeElement);
 
-    fullRender.find('div[data-key="0-0-1-1"] > .expand-icon-wrapper > .expand-icon').simulate('click');
-    expect(fullRender.find('div[data-key="0-0-1-2"]').node === document.activeElement);
   });
+
 });
