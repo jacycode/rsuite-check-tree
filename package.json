@@ -1,6 +1,6 @@
 {
   "name": "rsuite-check-tree",
-  "version": "0.2.2-beta.10",
+  "version": "0.2.2-beta.11",
   "description": "A react check tree component",
   "directories": {
     "test": "test"
