@@ -68,6 +68,9 @@ class CheckTree extends Component {
   componentWillReceiveProps(nextProps) {
     if (!isEqual(this.props.data, nextProps.data)) {
       this.flattenNodes(nextProps.data);
+      this.unserializeLists({
+        check: nextProps.value
+      });
     }
 
     if (!isEqual(this.props.value, nextProps.value)) {
@@ -75,9 +78,7 @@ class CheckTree extends Component {
         selectedValues: nextProps.value,
       });
     }
-    this.unserializeLists({
-      check: nextProps.value
-    });
+
   }
 
   getNodeCheckState(node, cascade) {
