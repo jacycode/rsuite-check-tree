@@ -30,7 +30,8 @@
     "pages": "node docs/gh-pages.js",
     "prerelease": "npm run build",
     "release": "npm publish",
-    "test": "jest && codecov"
+    "test": "jest && codecov",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "main": "lib/index.js",
   "author": "superman<supermanchc@gmail.com>",
@@ -73,6 +74,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "codecov": "^2.2.0",
     "compression-webpack-plugin": "^1.0.1",
+    "coveralls": "^3.0.0",
     "cross-env": "^2.0.0",
     "css-loader": "^0.23.1",
     "dom-lib": "^0.2.3",
