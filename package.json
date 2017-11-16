@@ -30,7 +30,7 @@
     "pages": "node docs/gh-pages.js",
     "prerelease": "npm run build",
     "release": "npm publish",
-    "test": "jest && codecov",
+    "test": "jest",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "main": "lib/index.js",
