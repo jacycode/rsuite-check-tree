@@ -67,7 +67,7 @@ describe('ChectTree test suite', () => {
     const nextTreeData = cloneDeep(treeData);
     setTreeData(newTreeData, activeNode, layer, nextTreeData);
 
-    fullRender.setState({
+    fullRender.setProps({
       data: nextTreeData
     });
 
