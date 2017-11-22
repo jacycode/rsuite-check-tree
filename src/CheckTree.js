@@ -448,6 +448,7 @@ class CheckTree extends Component {
       index,
       layer,
       checkState,
+      visible: node.visible,
       defaultExpandAll
     };
 

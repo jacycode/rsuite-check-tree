@@ -5,6 +5,7 @@ import { hasClass } from 'dom-lib';
 import { CHECK_STATE } from './constants';
 
 const propTypes = {
+  visible: PropTypes.bool,
   label: PropTypes.any,        // eslint-disable-line react/forbid-prop-types
   nodeData: PropTypes.object,  // eslint-disable-line react/forbid-prop-types
   active: PropTypes.bool,
@@ -18,6 +19,10 @@ const propTypes = {
   onRenderTreeIcon: PropTypes.func,
   onRenderTreeNode: PropTypes.func,
   onKeyDown: PropTypes.func,
+};
+
+const defaultProps = {
+  visible: true,
 };
 
 class TreeCheckNode extends Component {
@@ -93,6 +98,7 @@ class TreeCheckNode extends Component {
 
   render() {
     const {
+      visible,
       active,
       layer,
       disabled,
@@ -113,7 +119,7 @@ class TreeCheckNode extends Component {
       paddingLeft: layer * 20
     };
 
-    return (
+    return visible ? (
       <div
         tabIndex={-1}
         role="button"
@@ -128,9 +134,10 @@ class TreeCheckNode extends Component {
         {this.renderIcon()}
         {this.renderLabel()}
       </div>
-    );
+    ) : null;
   }
 }
 
 TreeCheckNode.propTypes = propTypes;
+TreeCheckNode.defaultProps = defaultProps;
 export default TreeCheckNode;
