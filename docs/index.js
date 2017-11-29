@@ -4,18 +4,21 @@ import ReactDOM from 'react-dom';
 import { Header, Navbar, Nav, Row, Col } from 'rsuite';
 import { Markdown } from 'markdownloader';
 import Affix from 'rsuite-affix';
-
+import CodeView from 'react-code-view';
+import cloneDeep from 'lodash/cloneDeep';
+import 'react-code-view/lib/less/index.less';
 import '../src/less/index.less';
 import './less/index.less';
+import CheckTree from '../src';
+import data from './data/treeData';
+const largeData = require('./data/testData.json');
 
-import CodeComponent from './components/CodeComponent';
-
-import CheckTree1 from './examples/CheckTree1';
-import CheckTree2 from './examples/CheckTree2';
-import ControlledTree from './examples/ControlledTree';
-import DynamicTree from './examples/Dynamic';
-import CustomIcon from './examples/CustomIcon';
-import LargeData from './examples/LargeData';
+const babelOptions = {
+  presets: ['stage-0', 'react', 'es2015'],
+  plugins: [
+    'transform-class-properties'
+  ]
+};
 
 class App extends Component {
   render() {
@@ -54,6 +57,7 @@ class App extends Component {
                   <Nav.Item href="#controlled">&nbsp;&nbsp;- 受控组件</Nav.Item>
                   <Nav.Item href="#dynamic">&nbsp;&nbsp;- 异步加载数据</Nav.Item>
                   <Nav.Item href="#custom">&nbsp;&nbsp;- 自定义图标</Nav.Item>
+                  <Nav.Item href="#large">&nbsp;&nbsp;- Large Data</Nav.Item>
                   <Nav.Item href="#API"># API</Nav.Item>
                 </Nav>
               </Affix>
@@ -61,32 +65,89 @@ class App extends Component {
             <Col md={10}>
               <a id="README" className="target-fix" />
               <Markdown>{require('../README.md')}</Markdown>
+              <hr id="relation" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/checkTree1.md')}
+                    dependencies={{
+                      data,
+                      CheckTree
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
+              <hr id="unrelation" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/checkTree2.md')}
+                    dependencies={{
+                      data,
+                      CheckTree
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
+              <hr id="relation" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/controllerTree.md')}
+                    dependencies={{
+                      data,
+                      CheckTree
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
+              <hr id="dynamic" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/dynamic.md')}
+                    dependencies={{
+                      data,
+                      CheckTree,
+                      cloneDeep
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
 
-              <h2 id="examples"><code>示例</code></h2>
-              <h5 id="relation"><code>关系状态检查</code></h5>
-              {<CheckTree1 />}
-              <CodeComponent md={require('./md/checkTree1.md')} />
-              <h5 id="unrelation"><code>非关系状态检查</code></h5>
-              {<CheckTree2 />}
-              <CodeComponent md={require('./md/checkTree2.md')} />
-              <br />
-              <h5 id="controlled"><code>受控组件</code></h5>
-              {<ControlledTree />}
-              <CodeComponent md={require('./md/controllerTree.md')} />
-              <br />
-              <h5 id="dynamic"><code>异步加载数据</code></h5>
-              {<DynamicTree />}
-              <CodeComponent md={require('./md/dynamic.md')} />
-              <div>
-                <code>注意：在使用动态加载数据时，应当注意对 data 进行 深拷贝后再出入到 check-tree 组件中。如示例当中的，使用 _.cloneDeep() 对原始 data 进行深拷贝后再进行操作</code>
-              </div>
-              <br />
-              <h5 id="custom"><code>自定义图标</code></h5>
-              {<CustomIcon />}
-              <CodeComponent md={require('./md/custom.md')} />
+              <hr id="custom" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/custom.md')}
+                    dependencies={{
+                      data,
+                      CheckTree,
+                      cloneDeep
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
 
-              <h5 id="custom"><code>Large Data</code></h5>
-              {<LargeData />}
+              <hr id="large" className="target-fix" />
+              <Row>
+                <Col md={12}>
+                  <CodeView
+                    source={require('./md/large.md')}
+                    dependencies={{
+                      largeData,
+                      CheckTree,
+                      cloneDeep
+                    }}
+                    babelTransformOptions={babelOptions}
+                  />
+                </Col>
+              </Row>
               <h2 id="API"><code>{'API'}</code></h2>
               <Markdown>
                 {require('./md/props.md')}

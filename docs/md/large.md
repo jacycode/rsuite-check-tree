@@ -1,12 +1,12 @@
-## 受控组件
+## large data
 <!-- start-code -->
 ```js
-class ControlledTree extends React.Component {
+class LargeData extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data,
-      selectedValues: ['Dave']
+      data: largeData,
+      selectedValues: ['Dave', 'Maya']
     };
   }
 
@@ -23,22 +23,26 @@ class ControlledTree extends React.Component {
     const { data, selectedValues } = this.state;
 
     return (
+      <div className="doc-example">
         <CheckTree
           defaultExpandAll
-          cascade={false}
+          cascade
           data={data}
           value={selectedValues}
           disabledItems={['disabled']}
-          height={300}
+          height={400}
+          onSelect={(activeNode, layer) => {
+            console.log(activeNode, layer);
+          }}
           onExpand={(activeNode, layer) => {
             console.log(activeNode, layer);
           }}
           onChange={this.handleOnChange}
         />
+      </div>
     );
   }
 }
-
-ReactDOM.render(<ControlledTree />)
+ReactDOM.render(<LargeData />);
 ```
 <!-- end-code -->

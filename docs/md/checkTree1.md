@@ -1,13 +1,10 @@
+## 关系检查
+<!--start-code-->
 ```js
-import React from 'react';
-import CheckTree from 'rsuite-check-tree';
-import treeData from '../data/treeData';
-
 const CheckTree1 = props => (
-  <div className="doc-example">
     <CheckTree
       defaultExpandAll
-      data={treeData}
+      data={data}
       height={400}
       defaultValue={['Dave']}
       disabledItems={['disabled']}
@@ -21,10 +18,7 @@ const CheckTree1 = props => (
         console.log(e.target);
       }}
     />
-  </div>
 );
-
-export default CheckTree1;
-
-
+ReactDOM.render(<CheckTree1 />);
 ```
+<!--end-code-->

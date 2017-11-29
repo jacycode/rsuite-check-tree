@@ -1,25 +1,21 @@
+## 非关系检查
+<!-- start-code -->
 ```js
-import React, { Component } from 'react';
-import CheckTree from 'rsuite-check-tree';
-import treeData from '../data/treeData';
-
-class CheckTree2 extends Component {
+class CheckTree2 extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [],
+      data,
       value: ['Dave']
     };
   }
   render() {
     const { data, value } = this.state;
-
     return (
-      <div className="doc-example">
         <CheckTree
           defaultExpandAll
           cascade={false}
-          data={treeData}
+          data={data}
           defaultValue={value}
           disabledItems={['disabled']}
           height={300}
@@ -27,11 +23,11 @@ class CheckTree2 extends Component {
             console.log(activeNode, layer);
           }}
         />
-      </div>
     );
   }
 }
 
-export default CheckTree2;
+ReactDOM.render(<CheckTree2 />)
 
 ```
+<!-- end-code -->

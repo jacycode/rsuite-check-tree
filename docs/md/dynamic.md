@@ -1,19 +1,15 @@
+## 异步加载数据
+<!-- start-code -->
 ```js
-import React, { Component } from 'react';
-import _ from 'lodash';
-import CheckTree from 'rsuite-check-tree';
-import treeData from '../data/treeData';
-
-
 const newTreeData = [{
   value: 'children1',
   label: 'children1'
 }];
-class Dynamic extends Component {
+class Dynamic extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: treeData,
+      data,
       selectedValues: ['Dave']
     };
   }
@@ -46,7 +42,7 @@ class Dynamic extends Component {
 
   setLoading(activeNode, loading = true) {
     const { data } = this.state;
-    const nextTreeData = _.cloneDeep(data);
+    const nextTreeData = cloneDeep(data);
     const loop = (nodes) => {
       nodes.forEach((node) => {
         if (node.value === activeNode.value) {
@@ -66,7 +62,7 @@ class Dynamic extends Component {
 
   loadData = (activeNode, layer) => {
     const { data } = this.state;
-    const nextTreeData = _.cloneDeep(data);
+    const nextTreeData = cloneDeep(data);
     return new Promise((resolve) => {
       setTimeout(() => {
         this.setTreeData(newTreeData, activeNode, layer, nextTreeData);
@@ -125,8 +121,7 @@ class Dynamic extends Component {
     );
   }
 }
-
-export default Dynamic;
-
-
+ReactDOM.render(<Dynamic />)
 ```
+<!-- end-code -->
+>注意：在使用动态加载数据时，应当注意对 data 进行 深拷贝后再出入到 check-tree 组件中。如示例当中的，使用 _.cloneDeep() 对原始 data 进行深拷贝后再进行操作

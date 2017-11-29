@@ -1,26 +1,18 @@
+## 自定义图标
+<!-- start-code -->
 ```js
-import React, { Component } from 'react';
-import _ from 'lodash';
-import CheckTree from 'rsuite-check-tree';
-import treeData from '../data/treeData';
-
-
-const newTreeData = [{
-  value: 'children1',
-  label: 'children1'
-}];
-class CheckTree2 extends Component {
+class Custom extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: treeData,
+      data,
       selectedValues: ['Dave']
     };
   }
 
   setExpand(activeNode) {
     const { data } = this.state;
-    const nextTreeData = _.cloneDeep(data);
+    const nextTreeData = cloneDeep(data);
     const loop = (nodes) => {
       nodes.forEach((node) => {
         if (node.value === activeNode.value) {
@@ -39,7 +31,6 @@ class CheckTree2 extends Component {
   }
 
   handleOnChange = (values) => {
-    console.log(values);
     this.setState((preveState) => {
       return {
         selectedValues: values
@@ -68,7 +59,6 @@ class CheckTree2 extends Component {
     const { data, selectedValues } = this.state;
 
     return (
-      <div className="doc-example">
         <CheckTree
           defaultExpandAll
           cascade={false}
@@ -80,11 +70,9 @@ class CheckTree2 extends Component {
           onChange={this.handleOnChange}
           renderTreeIcon={this.renderTreeIcon}
         />
-      </div>
     );
   }
 }
-
-export default CheckTree2;
-
+ReactDOM.render(<Custom />);
 ```
+<!-- end-code -->
