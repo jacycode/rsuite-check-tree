@@ -1,4 +1,4 @@
-## 非关系检查
+### 非关系检查
 <!-- start-code -->
 ```js
 class CheckTree2 extends React.Component {

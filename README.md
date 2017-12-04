@@ -7,20 +7,18 @@ check 树形控件，支持层级关系关联检查、受控与非受控设置�
 
 ## 快速开始
 
-安装
+### 安装
 
 ```
 npm install rsuite-check-tree --save
 ```
 
-用法
-
-引入 less 文件
+### 引入 less 文件
 ```
 @import "~rsuite-check-tree/lib/less/index";
 ```
 
-
+### 示例
 ```js
 import CheckTree from 'rsuite-check-tree';
 

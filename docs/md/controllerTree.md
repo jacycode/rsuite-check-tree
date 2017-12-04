@@ -1,4 +1,4 @@
-## 受控组件
+### 受控组件
 <!-- start-code -->
 ```js
 class ControlledTree extends React.Component {

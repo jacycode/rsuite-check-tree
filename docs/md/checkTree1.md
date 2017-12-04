@@ -1,4 +1,4 @@
-## 关系检查
+### 关系检查
 <!--start-code-->
 ```js
 const CheckTree1 = props => (
