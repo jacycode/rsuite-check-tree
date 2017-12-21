@@ -61,6 +61,7 @@ class TreeCheckNode extends Component {
     // 点击title的时候，如果 title 设置为可以点击，同时又拥有子节点，则可以展开数据
     labelClickableExpand && hasChildren && onTreeToggle(nodeData, layer, event);
 
+	/*
     let isChecked = false;
     if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
       isChecked = true;
@@ -70,6 +71,7 @@ class TreeCheckNode extends Component {
       isChecked = false;
     }
     nodeData.check = isChecked;
+    */
     onSelect(nodeData, layer, event);
   }
 
