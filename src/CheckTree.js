@@ -365,18 +365,27 @@ class CheckTree extends Component {
     const selectedValues = this.serializeList('check');
 
 	//checksatate  activenode  缺verify array
+	const checkState = this.getNodeCheckState(activeNode, cascade);
+	let isChecked = false;
+    if (checkState === CHECK_STATE.UNCHECK || checkState === CHECK_STATE.HALFCHECK) {
+      isChecked = true;
+    }
 
+    if (checkState === CHECK_STATE.CHECK) {
+      isChecked = false;
+    }
+    //activeNode.check = isChecked;
 
     if (this.isControlled) {
       onChange && onChange(selectedValues);
-      onSelect && onSelect(activeNode, layer, selectedValues);
+      onSelect && onSelect(activeNode, layer, selectedValues, isChecked);
     } else {
       this.setState({
         formattedNodes,
         selectedValues
       }, () => {
         onChange && onChange(selectedValues);
-        onSelect && onSelect(activeNode, layer, selectedValues);
+        onSelect && onSelect(activeNode, layer, selectedValues, isChecked);
       });
     }
   }
