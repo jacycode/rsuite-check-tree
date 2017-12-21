@@ -77,7 +77,7 @@ class TreeCheckNode extends Component {
 			isChecked = false;
 		}
 		nodeData.check = isChecked;
-		
+		this.props.filterNode(nodeData);
 		onSelect(nodeData, layer, event);
 		
 	}

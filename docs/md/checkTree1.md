@@ -17,7 +17,12 @@ const CheckTree1 = props => (
       onScroll={(e) => {
         console.log(e.target);
       }}
-      filterNodes={(nodes, values)=>{return {nodes,values}}}
+      filterNode={(nodeData)=>{
+      	if(nodeData.value=='Dave'){
+      		nodeData.check = false;
+      	}
+      	return nodeData;
+      }}
     />
 );
 ReactDOM.render(<CheckTree1 />);

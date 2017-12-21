@@ -421,19 +421,19 @@ class CheckTree extends Component {
 		/////////////////////////////////////////////////////////////
 		//                    单选、互斥逻辑                        //
 		/////////////////////////////////////////////////////////////
-		var res = this.props.filterNodes(formattedNodes, selectedValues);
-		var tempFormattedNodes = res[0];
-		var tempSelectedValues = res[1];
+//		var res = this.props.filterNodes(formattedNodes, selectedValues);
+//		var tempFormattedNodes = res[0];
+//		var tempSelectedValues = res[1];
 		if(this.isControlled) {
-			onChange && onChange(tempSelectedValues);
-			onSelect && onSelect(activeNode, layer, tempSelectedValues);
+			onChange && onChange(selectedValues);
+			onSelect && onSelect(activeNode, layer, selectedValues);
 		} else {
 			this.setState({
-				tempFormattedNodes,
-				tempSelectedValues
+				formattedNodes,
+				selectedValues
 			}, () => {
-				onChange && onChange(tempSelectedValues);
-				onSelect && onSelect(activeNode, layer, tempSelectedValues);
+				onChange && onChange(selectedValues);
+				onSelect && onSelect(activeNode, layer, selectedValues);
 			});
 		}
 		
@@ -486,7 +486,8 @@ class CheckTree extends Component {
 			childrenKey,
 			renderTreeNode,
 			renderTreeIcon,
-			cascade
+			cascade,
+			filterNode
 		} = this.props;
 
 		const key = `${node.refKey}`;
@@ -512,7 +513,8 @@ class CheckTree extends Component {
 			layer,
 			checkState,
 			visible: node.visible,
-			defaultExpandAll
+			defaultExpandAll,
+			filterNode
 		};
 		
 		if(props.hasChildren) {
