@@ -17,6 +17,7 @@ const CheckTree1 = props => (
       onScroll={(e) => {
         console.log(e.target);
       }}
+      filterNodes={(nodes, values)=>values}
     />
 );
 ReactDOM.render(<CheckTree1 />);

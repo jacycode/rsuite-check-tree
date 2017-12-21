@@ -59,7 +59,7 @@ class TreeCheckNode extends Component {
 		if(disabled) {
 			return;
 		}
-
+		
 		// 如果点击的是展开 icon 就 return
 		if(hasClass(event.target.parentNode, 'expand-icon-wrapper')) {
 			return;

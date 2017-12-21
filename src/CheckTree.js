@@ -213,6 +213,7 @@ class CheckTree extends Component {
 		return nodes.map((node) => {
 			const formatted = { ...node
 			};
+			
 			formatted.check = this.nodes[node.refKey].check;
 			formatted.expand = this.nodes[node.refKey].expand;
 			if(Array.isArray(node.children) && node.children.length > 0) {
@@ -401,6 +402,7 @@ class CheckTree extends Component {
 	 * @param {number} layer            节点的层级
 	 */
 	handleSelect = (activeNode, layer) => {
+		
 		const {
 			onChange,
 			onSelect,
@@ -415,20 +417,26 @@ class CheckTree extends Component {
 		}
 
 		const selectedValues = this.serializeList('check');
-
+		
+		/////////////////////////////////////////////////////////////
+		//                    单选、互斥逻辑                        //
+		/////////////////////////////////////////////////////////////
+		var res = this.props.filterNodes(formattedNodes, selectedValues);
+		var tempFormattedNodes = res[0];
+		var tempSelectedValues = res[1];
 		if(this.isControlled) {
-			onChange && onChange(selectedValues);
-			onSelect && onSelect(activeNode, layer, selectedValues);
+			onChange && onChange(tempSelectedValues);
+			onSelect && onSelect(activeNode, layer, tempSelectedValues);
 		} else {
 			this.setState({
-				formattedNodes,
-				selectedValues
+				tempFormattedNodes,
+				tempSelectedValues
 			}, () => {
-				onChange && onChange(selectedValues);
-				onSelect && onSelect(activeNode, layer, selectedValues);
+				onChange && onChange(tempSelectedValues);
+				onSelect && onSelect(activeNode, layer, tempSelectedValues);
 			});
 		}
-	
+		
 	}
 
 	/**
@@ -506,7 +514,7 @@ class CheckTree extends Component {
 			visible: node.visible,
 			defaultExpandAll
 		};
-
+		
 		if(props.hasChildren) {
 			layer += 1;
 
@@ -554,7 +562,7 @@ class CheckTree extends Component {
 
 		const formattedNodes = this.state.formattedNodes.length ?
 			this.state.formattedNodes : this.getFormattedNodes(data);
-
+		
 		if(cascade) {
 			this.setCheckState(formattedNodes);
 		}
