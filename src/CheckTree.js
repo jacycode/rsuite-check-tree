@@ -28,6 +28,9 @@ const propTypes = {
 	onExpand: PropTypes.func,
 	onSelect: PropTypes.func,
 	onScroll: PropTypes.func,
+	filterNode: PropTypes.func,
+	filterNodes: PropTypes.func,
+	filterNodesDeep: PropTypes.func,
 	renderTreeNode: PropTypes.func,
 	renderTreeIcon: PropTypes.func,
 	didMount: PropTypes.func,
@@ -412,6 +415,10 @@ class CheckTree extends Component {
 		this.toggleChecked(activeNode, activeNode.check, cascade);
 		const formattedNodes = this.getFormattedNodes(data);
 
+		if(typeof(this.props.filterNodesDeep) == 'function'){
+			this.props.filterNodesDeep(formattedNodes);
+		}
+
 		if(cascade) {
 			this.setCheckState(formattedNodes);
 		}
@@ -452,6 +459,12 @@ class CheckTree extends Component {
 		onExpand && onExpand(nodeData, layer);
 	}
 
+	handleFilterNode = (nodeData)=>{
+		if(typeof(this.props.filterNode) == 'function'){
+			this.props.filterNode(nodeData);
+		}
+	}
+
 	/**
 	 * 处理键盘方向键移动
 	 */
@@ -487,7 +500,6 @@ class CheckTree extends Component {
 			renderTreeNode,
 			renderTreeIcon,
 			cascade,
-			filterNode
 		} = this.props;
 
 		const key = `${node.refKey}`;
@@ -514,7 +526,6 @@ class CheckTree extends Component {
 			checkState,
 			visible: node.visible,
 			defaultExpandAll,
-			filterNode
 		};
 		
 		if(props.hasChildren) {
@@ -533,6 +544,7 @@ class CheckTree extends Component {
           ref={key}
           multiple
           {...props}
+          filterNode={this.handleFilterNode}
         >
           {nodes.map((child, i) => this.renderNode(child, i, layer, node))}
         </InternalNode>
@@ -544,6 +556,7 @@ class CheckTree extends Component {
         key={key}
         ref={key}
         {...props}
+        filterNode={this.handleFilterNode}
       />
 		);
 	}
@@ -568,7 +581,9 @@ class CheckTree extends Component {
 		if(cascade) {
 			this.setCheckState(formattedNodes);
 		}
-
+		if (typeof(this.props.filterNodes)=="function") {
+			this.props.filterNodes(formattedNodes);
+		}
 		const nodes = formattedNodes.map((node, index) => {
 			return this.renderNode(node, index, layer);
 		});

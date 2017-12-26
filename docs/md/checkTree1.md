@@ -18,10 +18,10 @@ const CheckTree1 = props => (
         console.log(e.target);
       }}
       filterNode={(nodeData)=>{
-      	if(nodeData.value=='Dave'){
-      		nodeData.check = false;
-      	}
-      	return nodeData;
+        console.log('filterNode');
+      }}
+      filterNodes={(nodeDatas)=>{
+      	console.log('filterNodes');
       }}
     />
 );
